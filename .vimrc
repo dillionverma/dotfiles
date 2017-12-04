@@ -15,8 +15,8 @@ Plugin 'jistr/vim-nerdtree-tabs'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'ervandew/supertab'
-Plugin 'SirVer/ultisnips'
-Plugin 'honza/vim-snippets'
+"Plugin 'SirVer/ultisnips'
+"Plugin 'honza/vim-snippets'
 Plugin 'ryanoasis/vim-devicons'
 "Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
 "Plugin 'terryma/vim-multiple-cursors'
@@ -83,11 +83,13 @@ let g:nerdtree_tabs_open_on_console_startup=1
 let NERDTreeMapActivateNode='<right>'          " open nerdtree node with right key
 let NERDTreeMouseMode=3                        " navigate nerdtree with single click
 " let NERDTreeShowHidden=1                       " show hidden files
+let NERDTreeIgnore = ['\.d', '\.o']
 let g:airline_powerline_fonts = 1
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
 let g:ctrlp_max_files=0
 let g:ctrlp_max_depth=80
+let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . -co --exclude-standard', 'find %s -type f'] 
 let indent_guides_auto_colors = 0
 let g:indent_guides_enable_on_vim_startup = 1
 hi IndentGuidesOdd  ctermbg=none
@@ -121,4 +123,5 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
-let g:syntastic_cpp_compiler_options = "-std=c++11 -Wall -g"
+let g:syntastic_cpp_compiler_options = "-std=c++14 -Wall -g"
+
