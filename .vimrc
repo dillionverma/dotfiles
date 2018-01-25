@@ -14,7 +14,7 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'jistr/vim-nerdtree-tabs'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'ervandew/supertab'
+"Plugin 'ervandew/supertab'
 Plugin 'SirVer/ultisnips'
 Plugin 'honza/vim-snippets'
 Plugin 'ryanoasis/vim-devicons'
@@ -34,6 +34,7 @@ Plugin 'vim-ruby/vim-ruby'
 Plugin 'thoughtbot/vim-rspec'
 Plugin 'tpope/vim-rails'
 Plugin 'tpope/vim-bundler'
+Plugin 'mattn/emmet-vim'
 call vundle#end()
 
 map <SPACE> <leader>
@@ -150,3 +151,13 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 let g:syntastic_cpp_compiler_options = "-std=c++14 -Wall -g"
+
+"let g:closetag_filenames = "*.html,*.erb"
+
+let g:user_emmet_expandabbr_key='<Tab>'
+imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
+let g:user_emmet_settings = {
+    \  'html' : {
+    \    'indent_blockelement': 1,
+    \  },
+    \}
