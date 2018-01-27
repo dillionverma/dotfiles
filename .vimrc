@@ -93,6 +93,8 @@ set synmaxcol=256 "speed up rendering because syntax only up to max column
 syntax sync minlines=256
 set ttyfast
 
+set linespace=4
+
 "hi Normal ctermbg=none
 "hi NonText ctermbg=none
 "highlight clear SignColumn
