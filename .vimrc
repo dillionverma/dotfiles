@@ -1,5 +1,6 @@
 set nocompatible
 set number
+set encoding=utf8
 filetype plugin indent on
 
 set rtp+=~/.vim/bundle/Vundle.vim
@@ -7,37 +8,44 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'tpope/vim-fugitive'
 Plugin 'dikiaap/minimalist'
+Plugin 'kristijanhusak/vim-hybrid-material'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'scrooloose/nerdtree'
 Plugin 'jistr/vim-nerdtree-tabs'
+Plugin 'Xuyuanp/nerdtree-git-plugin'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'airblade/vim-gitgutter'
-"Plugin 'ervandew/supertab'
+Plugin 'ervandew/supertab'
 Plugin 'SirVer/ultisnips'
 Plugin 'honza/vim-snippets'
 Plugin 'ryanoasis/vim-devicons'
 Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
+Plugin 'moll/vim-bbye'
 "Plugin 'Valloric/YouCompleteMe'
 "Plugin 'terryma/vim-multiple-cursors'
 Plugin 'tpope/vim-surround'
-Plugin 'tpope/vim-endwise'
-Plugin 'tomlion/vim-solidity'
-Plugin 'vim-syntastic/syntastic'
+"Plugin 'tomlion/vim-solidity'
 Plugin 'pangloss/vim-javascript'
 Plugin 'mxw/vim-jsx'
 Plugin 'wakatime/vim-wakatime'
 Plugin 'raimondi/delimitmate'
+Plugin 'tpope/vim-endwise'
 Plugin 'yggdroot/indentline'
 Plugin 'vim-ruby/vim-ruby'
 Plugin 'thoughtbot/vim-rspec'
 Plugin 'tpope/vim-rails'
 Plugin 'tpope/vim-bundler'
+Plugin 'easymotion/vim-easymotion'
+Plugin 'mhinz/vim-startify'
+Plugin 'w0rp/ale'
 Plugin 'mattn/emmet-vim'
 call vundle#end()
 
 map <SPACE> <leader>
+
+map <leader>m :NERDTreeFind<cr>
 
 map <leader>s :source ~/.vimrc<CR>
 vmap <C-c> :w !pbcopy<CR>
@@ -52,6 +60,8 @@ nnoremap <S-Tab> :bprevious<CR>
 
 vnoremap < <gv
 vnoremap > >gv
+
+nnoremap <Leader>q :Bdelete<CR>
 
 au BufEnter *.rb syn match error contained "\<binding.pry\>"
 
@@ -78,22 +88,36 @@ set hidden
 set history=50     " store info in memory for speed
 set autoread        " autoread
 set clipboard=unnamed
-set wildignore+=*/.git/*,*/tmp/*,*/.DS_Store,*/vendor
+set wildignore+=*/.git/*,*/tmp/*,*/.DS_Store,*/vendor,*/.swp
 set signcolumn=yes  " always show gitgutter
+set title                " change the terminal's title
+set visualbell           " don't beep
+set noerrorbells         " don't beep
+set scrolloff=8 
 
 " Colors and Fonts
 set term=screen-256color
 set t_Co=256
 syntax on
-colorscheme minimalist
 set background=dark
+colorscheme minimalist
+
+if has("gui_running")
+  set guioptions=
+  set guifont=InconsolataGo\ Nerd\ Font
+  highlight CursorLineNr ctermfg=yellow
+  "hi Comment ctermfg=grey
+endif
+
 
 " speed up rendering
 set synmaxcol=256 "speed up rendering because syntax only up to max column 
 syntax sync minlines=256
 set ttyfast
+set lazyredraw
 
-set linespace=4
+set undodir=~/.vim/undodir
+set undofile
 
 "hi Normal ctermbg=none
 "hi NonText ctermbg=none
@@ -106,20 +130,23 @@ let NERDTreeMapActivateNode='<right>'          " open nerdtree node with right k
 let NERDTreeMouseMode=3                        " navigate nerdtree with single click
 " let NERDTreeShowHidden=1                       " show hidden files
 let g:NERDTreeWinSize=40
-let NERDTreeIgnore = ['\.d', '\.o']
+let NERDTreeIgnore = ['\.d', '\.o', 'node_modules']
 
 " make nerdtree syntax highlight faster
-let g:NERDTreeSyntaxDisableDefaultExtensions = 1
-let g:NERDTreeDisableExactMatchHighlight = 1
-let g:NERDTreeDisablePatternMatchHighlight = 1
-let g:NERDTreeSyntaxEnabledExtensions = ['c', 'h', 'c++', 'php', 'rb', 'js', 'css', 'scss', 'sass', 'html'] " example
+let g:WebDevIconsUnicodeDecorateFolderNodes = 1
+let g:DevIconsEnableFoldersOpenClose = 1
+let g:NERDTreeHighlightFolders = 1 " enables folder icon highlighting using exact match
+let g:NERDTreeHighlightCursorline = 0
+let NERDTreeMinimalUI = 1
+let NERDTreeDirArrows = 1
 
 let g:airline_powerline_fonts = 1
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
 let g:ctrlp_max_files=0
-let g:ctrlp_max_depth=80
-let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . -co --exclude-standard', 'find %s -type f'] 
+let g:ctrlp_max_depth=20
+let g:ctrlp_user_command = ['ag %s -co --exclude-standard --nogroup -i --nocolor'] 
+let g:ctrlp_use_caching = 1
 let indent_guides_auto_colors = 0
 let g:indent_guides_enable_on_vim_startup = 1
 hi IndentGuidesOdd  ctermbg=none
@@ -144,17 +171,34 @@ let g:markdown_fenced_languages = ['c', 'cpp', 'python', 'bash=sh']
 
 let g:jsx_ext_required = 0 "enables jsx syntax in .js files
 
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+"set statusline+=%#warningmsg#
+"set statusline+=%*
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_cpp_compiler_options = "-std=c++14 -Wall -g"
+let g:delimitMate_jump_expansion = 1
+let g:delimitMate_expand_space = 1
+let g:delimitMate_expand_cr = 2
+let g:delimitMate_expand_inside_quotes = 1
 
-"let g:closetag_filenames = "*.html,*.erb"
+let g:EasyMotion_leader_key = '<Leader>' 
+
+let g:startify_custom_header = readfile(expand('~/.vim/start.txt'))
+let g:startify_bookmarks = [{'v': '~/.vimrc'},
+                            \ {'z': '~/.zshrc'},
+                            \ {'t': '~/.tmux.conf'},
+                            \ {'g': '~/.gitconfig'},
+                         \ ]
+let g:startify_change_to_dir = 1
+let g:startify_change_to_vcs_root = 1
+highlight StartifyHeader ctermfg=Red
+let g:startify_list_order = [
+  \ ['   My most recently used files in the current directory:'],
+  \ 'dir',
+  \ ['   These are my bookmarks:'],
+  \ 'bookmarks',
+  \ ['   These are my commands:'],
+  \ 'commands',
+  \ ]
+
 
 let g:user_emmet_expandabbr_key='<Tab>'
 imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
