@@ -44,12 +44,8 @@ Plugin 'mattn/emmet-vim'
 call vundle#end()
 
 map <SPACE> <leader>
-
 map <leader>m :NERDTreeFind<cr>
-
 map <leader>s :source ~/.vimrc<CR>
-vmap <C-c> :w !pbcopy<CR>
-
 map <Leader>t :call RunCurrentSpecFile()<CR>
 map <Leader>s :call RunNearestSpec()<CR>
 map <Leader>l :call RunLastSpec()<CR>
@@ -57,14 +53,13 @@ map <Leader>a :call RunAllSpecs()<CR>
 
 nnoremap <Tab> :bnext<CR>
 nnoremap <S-Tab> :bprevious<CR>
+nnoremap <Leader>q :Bdelete<CR>
 
 vnoremap < <gv
 vnoremap > >gv
-
-nnoremap <Leader>q :Bdelete<CR>
+vmap <C-c> :w !pbcopy<CR>
 
 au BufEnter *.rb syn match error contained "\<binding.pry\>"
-
 
 " Configuration
 set autoread " Set to auto read when a file is changed from the outside
@@ -140,7 +135,6 @@ let g:NERDTreeHighlightCursorline = 0
 let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 
-let g:airline_powerline_fonts = 1
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
 let g:ctrlp_max_files=0
@@ -170,9 +164,6 @@ let g:UltiSnipsExpandTrigger="<tab>"
 let g:markdown_fenced_languages = ['c', 'cpp', 'python', 'bash=sh']
 
 let g:jsx_ext_required = 0 "enables jsx syntax in .js files
-
-"set statusline+=%#warningmsg#
-"set statusline+=%*
 
 let g:delimitMate_jump_expansion = 1
 let g:delimitMate_expand_space = 1
