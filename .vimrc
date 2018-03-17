@@ -29,8 +29,7 @@ Plugin 'moll/vim-bbye'
 "Plugin 'terryma/vim-multiple-cursors'
 Plugin 'tpope/vim-surround'
 "Plugin 'tomlion/vim-solidity'
-Plugin 'pangloss/vim-javascript'
-Plugin 'mxw/vim-jsx'
+Plugin 'chemzqm/vim-jsx-improve'
 Plugin 'wakatime/vim-wakatime'
 Plugin 'raimondi/delimitmate'
 Plugin 'tpope/vim-endwise'
@@ -41,7 +40,7 @@ Plugin 'tpope/vim-rails'
 Plugin 'tpope/vim-bundler'
 Plugin 'easymotion/vim-easymotion'
 Plugin 'mhinz/vim-startify'
-"Plugin 'w0rp/ale'
+Plugin 'w0rp/ale'
 call vundle#end()
 
 map <SPACE> <leader>
@@ -59,6 +58,7 @@ vnoremap > >gv
 vmap <C-c> :w !pbcopy<CR>
 
 au BufEnter *.rb syn match error contained "\<binding.pry\>"
+au BufEnter *.js syn match error contained "\<debugger\>"
 
 " =========================================
 " ============= BASIC SETUP ===============
@@ -167,8 +167,9 @@ let NERDTreeDirArrows = 1
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
 let g:ctrlp_user_command = ['ag %s -co --exclude-standard --nogroup -i --nocolor'] 
+let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
 let g:ctrlp_use_caching = 1
-let g:ctrlp_lazy_update = 50
+"let g:ctrlp_lazy_update = 5
 let g:ctrlp_clear_cache_on_exit = 0
 
 " =========================================
@@ -185,7 +186,7 @@ let g:airline_highlighting_cache=1
 " ============= DELIMITMATE ===============
 " =========================================
 
-let g:delimitMate_jump_expansion = 1
+"let g:delimitMate_jump_expansion = 1
 let g:delimitMate_expand_space = 1
 let g:delimitMate_expand_cr = 2
 let g:delimitMate_expand_inside_quotes = 1
@@ -194,11 +195,13 @@ let g:delimitMate_expand_inside_quotes = 1
 " ================ ALE ====================
 " =========================================
 
-let g:ale_open_list = 1
-let g:ale_fix_on_save = 1
+"let g:ale_fix_on_save = 1
+let g:ale_set_loclist = 1
+let g:ale_set_quickfix = 0
 let g:ale_set_highlights = 0
 let g:ale_fixers = {
 \   'ruby': ['rubocop', 'remove_trailing_lines'],
+\   'jsx':  ['stylelint', 'eslint'],
 \}
 
 " =========================================
