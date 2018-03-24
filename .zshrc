@@ -40,5 +40,6 @@ if [ -f '/Users/dillionverma/Documents/google-cloud-sdk/completion.zsh.inc' ]; t
 
 #archey
 
+eval $(thefuck --alias)
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
