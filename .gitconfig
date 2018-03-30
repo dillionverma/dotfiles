@@ -9,6 +9,14 @@
 [url "git@github.com:"]
 	insteadOf = https://github.com/
 [alias]
-  ls = !"git ls1"
-  ls1 = !"git ls1-specific --all"
+  ls = !fshow
+  ls1 = !"git ls2"
+  ls2 = !"git ls1-specific --all"
   ls1-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
+  track = "!git branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`"
+  branches = !"git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/heads/ | head -n 20"
+  recent = !BRANCH=`git branches | fzf` && git checkout ${BRANCH}
+[format]
+  pretty = format:%C(auto,yellow)%h%C(auto,magenta)% G? %C(auto,blue)%>(12,trunc)%ad %C(auto,green)%<(15,trunc)%aN%C(auto,reset)%s%C(auto,red)% gD% D
+[log]
+  date = relative
