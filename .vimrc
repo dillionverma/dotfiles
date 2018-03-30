@@ -4,16 +4,16 @@ set encoding=utf8
 filetype plugin indent on
 
 set rtp+=~/.vim/bundle/Vundle.vim
+set rtp+=/usr/local/opt/fzf
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'tpope/vim-fugitive'
 Plugin 'dikiaap/minimalist'
-Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'junegunn/fzf.vim'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'scrooloose/nerdtree'
 Plugin 'jistr/vim-nerdtree-tabs'
-Plugin 'Xuyuanp/nerdtree-git-plugin'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'ervandew/supertab'
@@ -30,12 +30,14 @@ Plugin 'chemzqm/vim-jsx-improve'
 Plugin 'wakatime/vim-wakatime'
 Plugin 'raimondi/delimitmate'
 Plugin 'tpope/vim-endwise'
-"Plugin 'yggdroot/indentline'
+Plugin 'yggdroot/indentline'
 Plugin 'vim-ruby/vim-ruby'
 Plugin 'thoughtbot/vim-rspec'
+Plugin 'tpope/vim-dispatch'
 Plugin 'tpope/vim-rails'
 Plugin 'tpope/vim-bundler'
 Plugin 'easymotion/vim-easymotion'
+Plugin 'junegunn/vim-easy-align'
 Plugin 'mhinz/vim-startify'
 Plugin 'w0rp/ale'
 call vundle#end()
@@ -47,6 +49,8 @@ map <Leader>t :call RunCurrentSpecFile()<CR>
 map <Leader>s :call RunNearestSpec()<CR>
 map <Leader>l :call RunLastSpec()<CR>
 map <Leader>a :call RunAllSpecs()<CR>
+nnoremap <c-p> :GFiles<cr>
+nnoremap <c-S-F> :Ag<cr>
 nnoremap <Tab> :bnext<CR>
 nnoremap <S-Tab> :bprevious<CR>
 nnoremap <Leader>q :Bdelete<CR>
@@ -54,8 +58,10 @@ vnoremap < <gv
 vnoremap > >gv
 vmap <C-c> :w !pbcopy<CR>
 
+nmap ga <Plug>(EasyAlign)
+xmap ga <Plug>(EasyAlign)
+
 au BufEnter *.rb syn match error contained "\<binding.pry\>"
-au BufEnter *.js syn match error contained "\<debugger\>"
 
 " =========================================
 " ============= BASIC SETUP ===============
@@ -65,6 +71,7 @@ set autoread " Set to auto read when a file is changed from the outside
 set ignorecase
 set smartcase
 set incsearch
+set hlsearch
 set backspace=indent,eol,start
 set mouse=a
 set nocursorline
@@ -77,7 +84,6 @@ set smartindent
 set autoindent
 set nowrap
 set showmatch       " Show matching parenthesis
-set runtimepath^=~/.vim/bundle/ctrlp.vim
 set hidden
 set history=50     " store info in memory for speed
 set autoread        " autoread
@@ -88,6 +94,7 @@ set title                " change the terminal's title
 set visualbell           " don't beep
 set noerrorbells         " don't beep
 set scrolloff=8 
+set splitbelow
 
 " =========================================
 " =============== COLORS ==================
@@ -99,7 +106,7 @@ endif
 "set termguicolors
 "let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
 "let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-syntax on
+syntax enable
 set t_Co=256
 set background=dark
 colorscheme minimalist
@@ -134,7 +141,7 @@ endif
 
 " speed up rendering
 set synmaxcol=256 "speed up rendering because syntax only up to max column 
-syntax sync minlines=256
+"syntax sync minlines=512
 set ttyfast
 set lazyredraw
 
@@ -148,7 +155,7 @@ set undofile
 autocmd vimenter * NERDTree | wincmd p
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 let g:nerdtree_tabs_open_on_console_startup=1
-let g:NERDTreeWinSize=40
+let g:NERDTreeWinSize=35
 let g:NERDTreeHighlightFolders = 1 " enables folder icon highlighting using exact match
 let g:NERDTreeHighlightCursorline = 0
 let NERDTreeMapActivateNode='<right>'          " open nerdtree node with right key
@@ -158,16 +165,18 @@ let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 
 " =========================================
-" =============== CTRL-P ==================
+" ================= FZF ===================
 " =========================================
 
-let g:ctrlp_map = '<c-p>'
-let g:ctrlp_cmd = 'CtrlP'
-let g:ctrlp_user_command = ['ag %s -co --exclude-standard --nogroup -i --nocolor'] 
-let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
-let g:ctrlp_use_caching = 1
-"let g:ctrlp_lazy_update = 5
-let g:ctrlp_clear_cache_on_exit = 0
+let g:fzf_layout = { 'down': '~30%' }
+
+" Little preview window for files
+command! -bang -nargs=? -complete=dir GFiles
+  \ call fzf#vim#gitfiles(<q-args>, fzf#vim#with_preview())
+
+" Little preview window for words
+command! -bang -nargs=* Ag
+  \ call fzf#vim#ag(<q-args>, fzf#vim#with_preview('right:50%'))
 
 " =========================================
 " =============== AIRLINE =================
@@ -191,15 +200,13 @@ let g:delimitMate_expand_inside_quotes = 1
 " =========================================
 " ================ ALE ====================
 " =========================================
-
-"let g:ale_fix_on_save = 1
 let g:ale_set_loclist = 1
 let g:ale_set_quickfix = 0
 let g:ale_set_highlights = 0
 let g:ale_fixers = {
 \   'ruby': ['rubocop', 'remove_trailing_lines'],
-\   'jsx':  ['stylelint', 'eslint'],
 \}
+let g:ale_warn_about_trailing_whitespace = 1
 
 " =========================================
 " ================ EMMET ==================
@@ -216,7 +223,7 @@ let g:user_emmet_settings = {
 " =========================================
 " ================ OTHER ==================
 " =========================================
-
+"
 let g:indent_guides_enable_on_vim_startup = 1
 let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 let g:DevIconsEnableFoldersOpenClose = 1
