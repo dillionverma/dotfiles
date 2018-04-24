@@ -156,7 +156,7 @@ set undofile
 autocmd vimenter * NERDTree | wincmd p
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 let g:nerdtree_tabs_open_on_console_startup=1
-let g:NERDTreeWinSize=35
+let g:NERDTreeWinSize=30
 let g:NERDTreeHighlightFolders = 1 " enables folder icon highlighting using exact match
 let g:NERDTreeHighlightCursorline = 0
 let NERDTreeMapActivateNode='<right>'          " open nerdtree node with right key
@@ -237,8 +237,6 @@ let g:markdown_fenced_languages = ['c', 'cpp', 'python', 'bash=sh']
 let g:jsx_ext_required = 0 "enables jsx syntax in .js files
 let indent_guides_auto_colors = 0
 set fillchars+=vert:\ 
-"set statusline+=%#warningmsg#
-"set statusline+=%*
 
 " =========================================
 " ============== STARTIFY =================
