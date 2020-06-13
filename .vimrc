@@ -17,13 +17,13 @@ Plugin 'jistr/vim-nerdtree-tabs'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'ervandew/supertab'
-"Plugin 'SirVer/ultisnips'
+Plugin 'SirVer/ultisnips'
 Plugin 'honza/vim-snippets'
 Plugin 'ryanoasis/vim-devicons'
 Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plugin 'moll/vim-bbye'
+Plugin 'junegunn/vim-emoji'
 "Plugin 'Valloric/YouCompleteMe'
-Plugin 'mattn/emmet-vim'
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'tpope/vim-surround'
 Plugin 'tomlion/vim-solidity'
@@ -41,6 +41,7 @@ Plugin 'easymotion/vim-easymotion'
 Plugin 'junegunn/vim-easy-align'
 Plugin 'mhinz/vim-startify'
 Plugin 'w0rp/ale'
+Plugin 'posva/vim-vue'
 call vundle#end()
 
 map <SPACE> <leader>
@@ -50,7 +51,7 @@ map <Leader>t :call RunCurrentSpecFile()<CR>
 map <Leader>s :call RunNearestSpec()<CR>
 map <Leader>l :call RunLastSpec()<CR>
 map <Leader>a :call RunAllSpecs()<CR>
-nnoremap <c-p> :GFiles<cr>
+nnoremap <c-p> :Files<cr>
 nnoremap <c-S-F> :Ag<cr>
 nnoremap <Tab> :bnext<CR>
 nnoremap <S-Tab> :bprevious<CR>
@@ -63,6 +64,7 @@ nmap ga <Plug>(EasyAlign)
 xmap ga <Plug>(EasyAlign)
 
 au BufEnter *.rb syn match error contained "\<binding.pry\>"
+autocmd BufNewFile,BufRead *.vue set ft=vue
 
 " =========================================
 " ============= BASIC SETUP ===============
@@ -146,6 +148,8 @@ set synmaxcol=256 "speed up rendering because syntax only up to max column
 set ttyfast
 set lazyredraw
 
+au BufRead,BufNewFile *.wlp4 set filetype=cpp
+
 set undodir=~/.vim/undodir
 set undofile
 
@@ -156,7 +160,7 @@ set undofile
 autocmd vimenter * NERDTree | wincmd p
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 let g:nerdtree_tabs_open_on_console_startup=1
-let g:NERDTreeWinSize=30
+let g:NERDTreeWinSize=35
 let g:NERDTreeHighlightFolders = 1 " enables folder icon highlighting using exact match
 let g:NERDTreeHighlightCursorline = 0
 let NERDTreeMapActivateNode='<right>'          " open nerdtree node with right key
@@ -164,6 +168,7 @@ let NERDTreeMouseMode=3                        " navigate nerdtree with single c
 let NERDTreeIgnore = ['\.d', '\.o', 'node_modules']
 let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
+let NERDTreeShowHidden = 1
 
 " =========================================
 " ================= FZF ===================
@@ -172,8 +177,8 @@ let NERDTreeDirArrows = 1
 let g:fzf_layout = { 'down': '~30%' }
 
 " Little preview window for files
-command! -bang -nargs=? -complete=dir GFiles
-  \ call fzf#vim#gitfiles(<q-args>, fzf#vim#with_preview())
+command! -bang -nargs=? -complete=dir Files
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview())
 
 " Little preview window for words
 command! -bang -nargs=* Ag
@@ -225,6 +230,10 @@ let g:user_emmet_settings = {
 " ================ OTHER ==================
 " =========================================
 "
+
+let g:gitgutter_sign_added='┃'
+let g:gitgutter_sign_modified='┃'
+let g:tex_conceal = ""
 let g:indent_guides_enable_on_vim_startup = 1
 let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 let g:DevIconsEnableFoldersOpenClose = 1
@@ -237,6 +246,9 @@ let g:markdown_fenced_languages = ['c', 'cpp', 'python', 'bash=sh']
 let g:jsx_ext_required = 0 "enables jsx syntax in .js files
 let indent_guides_auto_colors = 0
 set fillchars+=vert:\ 
+let g:vue_disable_pre_processors = 1
+"set statusline+=%#warningmsg#
+"set statusline+=%*
 
 " =========================================
 " ============== STARTIFY =================
@@ -265,6 +277,28 @@ function! s:filter_header(lines) abort
         \ 'repeat(" ", (&columns / 2) - (longest_line / 2)) . v:val')
     return centered_lines
 endfunction
+
+
+" Allows for commenting to work in vue files
+"function! NERDCommenter_before()
+  "if &ft == 'vue'
+    "let g:ft = 'vue'
+    "let stack = synstack(line('.'), col('.'))
+    "if len(stack) > 0
+      "let syn = synIDattr((stack)[0], 'name')
+      "if len(syn) > 0
+        "exe 'setf ' . substitute(tolower(syn), '^vue_', '', '')
+      "endif
+    "endif
+  "endif
+"endfunction
+
+"function! NERDCommenter_after()
+  "if g:ft == 'vue'
+    "setf vue
+    "let g:ft = ''
+  "endif
+"endfunction
 
 let g:startify_custom_header = s:filter_header([
     \ '      ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁    ░▓▓▒         ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁',
