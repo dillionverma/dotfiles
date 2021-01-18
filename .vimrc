@@ -58,6 +58,7 @@ nnoremap <S-Tab> :bprevious<CR>
 nnoremap <Leader>q :Bdelete<CR>
 vnoremap < <gv
 vnoremap > >gv
+inoremap jj <ESC> " jj in insert mode to escape
 vmap <C-c> :w !pbcopy<CR>
 
 nmap ga <Plug>(EasyAlign)

@@ -6,7 +6,7 @@ module.exports = {
     config: {
       // choose either `'stable'` for receiving highly polished,
       // or `'canary'` for less polished but more frequent updates
-      updateChannel: 'canary',
+      updateChannel: 'stable',
   
       // default font size in pixels for all tabs
       fontSize: 12,
@@ -103,7 +103,7 @@ module.exports = {
       //
       // PowerShell on Windows
       // - Example: `C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`
-      shell: '',
+      shell: '/bin/zsh',
   
       // for setting shell arguments (i.e. for using interactive shellArgs: `['-i']`)
       // by default `['--login']` will be used
@@ -113,7 +113,7 @@ module.exports = {
       env: {},
   
       // set to `false` for no bell
-      bell: 'SOUND',
+      bell: 'false',
   
       // if `true` (without backticks and without quotes), selected text will automatically be copied to the clipboard
       copyOnSelect: false,
