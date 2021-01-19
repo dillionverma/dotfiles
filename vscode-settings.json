@@ -1,0 +1,18 @@
+{
+    "editor.fontFamily": "'Fira Code', Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontLigatures": true,
+    "editor.fontSize": 12,
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "terminal.integrated.fontFamily": "Fira Code",
+    "terminal.integrated.shell.osx": "/bin/zsh",
+    "window.zoomLevel": 0,
+    "workbench.colorTheme": "Monokai Pro (Filter Machine)",
+    "workbench.iconTheme": "Monokai Pro (Filter Machine) Icons",
+    "workbench.editor.highlightModifiedTabs": true,
+    "editor.cursorStyle": "line",
+    "editor.cursorBlinking": "smooth",
+    "editor.cursorSmoothCaretAnimation": true,
+    "editor.mouseWheelZoom": true,
+    "files.trimFinalNewlines": true,
+}
