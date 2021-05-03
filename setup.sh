@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "Creating an ed25519 SSH key for you..."
 ssh-keygen -t ed25519 -C "dillionverma@hotmail.com"
 
