@@ -17,6 +17,11 @@ Plugin 'ycm-core/YouCompleteMe'
 Plugin 'junegunn/fzf.vim'
 Plugin 'fatih/vim-go'
 Plugin 'airblade/vim-gitgutter'
+
+" HTML
+Plugin 'mattn/emmet-vim'
+Plugin 'alvan/vim-closetag'
+
 Plugin 'w0rp/ale'
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/nerdcommenter'
@@ -120,4 +125,6 @@ let g:airline_highlighting_cache=1
 let g:gitgutter_sign_added='┃'
 let g:gitgutter_sign_modified='┃'
 "let g:ycm_key_list_stop_completion = [ '<C-y>', '<Enter>' ]
+"let g:user_emmet_expandabbr_key='<Tab>'
+"imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
 
