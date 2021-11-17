@@ -1,0 +1,20 @@
+[user]
+	name = Dillion Verma
+	email = hello@dillionverma.com
+[commit]
+	gpgSign = true
+[pager]
+  diff = delta
+  log = delta
+  reflog = delta
+  show = delta
+[delta]
+  syntax-theme = gruvbox-dark 
+  navigate = true
+  line-numbers = true
+[interactive]
+  diffFilter = delta --color-only
+[push]
+	default = current
+[init]
+	defaultBranch = main
