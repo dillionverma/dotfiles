@@ -2,8 +2,13 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+if command -v git >/dev/null 2>&1 && git -C "${SCRIPT_DIR}" rev-parse --show-toplevel >/dev/null 2>&1; then
+  DOTFILES_DIR="$(git -C "${SCRIPT_DIR}" rev-parse --show-toplevel)"
+else
+  DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd -P)"
+fi
+DOTFILES_DIR="$(cd "${DOTFILES_DIR}" && pwd -P)"
 TIMESTAMP="$(date +%Y%m%d%H%M%S)"
 
 link_file() {
