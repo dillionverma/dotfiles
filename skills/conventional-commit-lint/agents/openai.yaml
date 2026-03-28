@@ -1,4 +1,0 @@
-interface:
-  display_name: "Commit Lint"
-  short_description: "Enforce conventional commits"
-  default_prompt: "Use $conventional-commit-lint to add conventional commit linting to this repo."
