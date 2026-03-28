@@ -1,46 +1,36 @@
-# New Laptop Setup
+# Dotfiles
 
-This folder contains a macOS-first bootstrap flow for setting up a fresh laptop.
+This repo is the source for my macOS laptop bootstrap and local setup manifests.
 
-## Entry points
-- Local: `~/setup.sh`
-- Hosted: `curl -fsSL https://dillion.io/install.sh | bash`
+The public installer is hosted from the `dillionverma.com` repo and exposed at:
 
-The hosted `install.sh` should serve the bootstrap script in this folder and make the rest of the installer files available under:
+- `https://dillion.io/install.sh`
+- `https://dillion.io/install/...`
 
-- `https://dillion.io/new-laptop-setup/Brewfile.core`
-- `https://dillion.io/new-laptop-setup/Brewfile.full`
-- `https://dillion.io/new-laptop-setup/README.md`
-- `https://dillion.io/new-laptop-setup/scripts/setup-macos.sh`
-- `https://dillion.io/new-laptop-setup/manifests/npm-global-packages.txt`
-- `https://dillion.io/new-laptop-setup/manifests/uv-tools.txt`
-- `https://dillion.io/new-laptop-setup/manifests/cargo-packages.txt`
-- `https://dillion.io/new-laptop-setup/manifests/dock-items.txt`
+## Local usage
+- Full install: `~/src/dotfiles/setup.sh`
+- Core CLI-only install: `SETUP_MODE=core ~/src/dotfiles/setup.sh`
+- Dry run: `~/src/dotfiles/setup.sh --dry-run`
+- List phases: `~/src/dotfiles/setup.sh --list-phases`
+- Only install brew packages: `~/src/dotfiles/setup.sh --only brew`
+- Only configure the Dock: `~/src/dotfiles/setup.sh --only dock`
+- Skip auth and Mac App Store setup: `~/src/dotfiles/setup.sh --skip auth`
 
-If you want to host the support files somewhere else, override:
+## Hosted usage
+```bash
+curl -fsSL https://dillion.io/install.sh | bash
+```
 
-- `INSTALL_BASE_URL=https://example.com/new-laptop-setup`
+If the support files live somewhere else, override:
 
-## Common usage
-- Full install: `~/setup.sh`
-- Core CLI-only install: `SETUP_MODE=core ~/setup.sh`
-- Dry run: `~/setup.sh --dry-run`
-- List phases: `~/setup.sh --list-phases`
-- Only install brew packages: `~/setup.sh --only brew`
-- Only configure the Dock: `~/setup.sh --only dock`
-- Skip auth and Mac App Store setup: `~/setup.sh --skip auth`
+```bash
+INSTALL_BASE_URL=https://example.com/install curl -fsSL https://example.com/install.sh | bash
+```
 
-## Environment overrides
-- `COMPUTER_NAME`
-- `GIT_USER_NAME`
-- `GIT_USER_EMAIL`
-- `SETUP_MODE`
-
-`SETUP_MODE` values:
-- `full` installs formulae, casks, and App Store apps where available.
-- `core` installs formulae only.
-
-## Managed manifests
+## Structure
+- `setup.sh`: local wrapper for running the installer from this repo
+- `install.sh`: hosted bootstrap entrypoint
+- `scripts/setup-macos.sh`: main macOS installer
 - `Brewfile.core`: CLI and service packages only
 - `Brewfile.full`: core packages plus apps, fonts, and App Store apps
 - `manifests/npm-global-packages.txt`: global Node packages installed after `nvm` + Node LTS
@@ -48,11 +38,13 @@ If you want to host the support files somewhere else, override:
 - `manifests/cargo-packages.txt`: Rust tools installed via `cargo install --locked`
 - `manifests/dock-items.txt`: pinned Dock items, added in order if present
 
-Example:
+## Environment overrides
+- `COMPUTER_NAME`
+- `GIT_USER_NAME`
+- `GIT_USER_EMAIL`
+- `SETUP_MODE`
+- `INSTALL_BASE_URL`
 
-```bash
-COMPUTER_NAME=mbp \
-GIT_USER_NAME="Dillion Verma" \
-GIT_USER_EMAIL="hello@dillion.io" \
-~/setup.sh
-```
+`SETUP_MODE` values:
+- `full` installs formulae, casks, and App Store apps where available
+- `core` installs formulae only

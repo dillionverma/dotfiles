@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-INSTALL_BASE_URL="${INSTALL_BASE_URL:-https://dillion.io/new-laptop-setup}"
+INSTALL_BASE_URL="${INSTALL_BASE_URL:-https://dillion.io/install}"
 INSTALL_SOURCE_DIR="${INSTALL_SOURCE_DIR:-}"
 
 log() {
