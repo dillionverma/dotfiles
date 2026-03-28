@@ -20,6 +20,7 @@ curl -fsSL https://dillion.io/install.sh | bash
 - Homebrew packages and apps
 - Git, SSH, and GitHub CLI auth
 - Node, Python, and Rust tooling
+- Repo-managed Codex skills
 - macOS defaults
 - Dock layout
 
@@ -29,6 +30,7 @@ curl -fsSL https://dillion.io/install.sh | bash
 - `scripts/setup-macos.sh`: main macOS installer
 - `Brewfile.core`: CLI and service packages
 - `Brewfile.full`: apps, fonts, and App Store installs
+- `skills/`: Codex skills symlinked into `~/.codex/skills`
 - `manifests/`: extra package and Dock manifests
 
 ## Configuration

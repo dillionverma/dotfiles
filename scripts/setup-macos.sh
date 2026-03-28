@@ -12,6 +12,9 @@ NPM_PACKAGES_FILE="${NPM_PACKAGES_FILE:-${INSTALLER_ROOT}/manifests/npm-global-p
 UV_TOOLS_FILE="${UV_TOOLS_FILE:-${INSTALLER_ROOT}/manifests/uv-tools.txt}"
 CARGO_PACKAGES_FILE="${CARGO_PACKAGES_FILE:-${INSTALLER_ROOT}/manifests/cargo-packages.txt}"
 DOCK_ITEMS_FILE="${DOCK_ITEMS_FILE:-${INSTALLER_ROOT}/manifests/dock-items.txt}"
+DOTFILES_REPO_URL="${DOTFILES_REPO_URL:-https://github.com/dillionverma/dotfiles.git}"
+DOTFILES_DIR="${DOTFILES_DIR:-}"
+CODEX_SKILLS_DIR="${CODEX_SKILLS_DIR:-${HOME}/.codex/skills}"
 SETUP_MODE="${SETUP_MODE:-full}"
 COMPUTER_NAME="${COMPUTER_NAME:-mbp}"
 GIT_USER_NAME="${GIT_USER_NAME:-Dillion Verma}"
@@ -30,6 +33,8 @@ GH_AUTH_RESULT="not_run"
 DOCK_RESULT="not_run"
 DOCK_ITEMS_ADDED=0
 DOCK_ITEMS_SKIPPED=0
+SKILLS_RESULT="not_run"
+SKILLS_SYMLINKED=0
 
 log() {
   printf '[setup] %s\n' "$*"
@@ -580,6 +585,58 @@ clone_if_missing() {
   git clone "${repo_url}" "${dest}"
 }
 
+resolve_dotfiles_dir() {
+  if [[ -n "${DOTFILES_DIR}" ]]; then
+    return
+  fi
+
+  if [[ -n "${INSTALL_SOURCE_DIR:-}" && -d "${INSTALL_SOURCE_DIR}/.git" ]]; then
+    DOTFILES_DIR="${INSTALL_SOURCE_DIR}"
+    return
+  fi
+
+  DOTFILES_DIR="${HOME}/src/dotfiles"
+}
+
+ensure_dotfiles_repo() {
+  if [[ -d "${DOTFILES_DIR}/.git" ]]; then
+    log "Dotfiles repo already present at ${DOTFILES_DIR}."
+    return
+  fi
+
+  clone_if_missing "${DOTFILES_REPO_URL}" "${DOTFILES_DIR}"
+}
+
+symlink_repo_skills() {
+  local skill_dir
+  local target_dir="${DOTFILES_DIR}/skills"
+
+  ensure_dotfiles_repo
+  mkdir -p "${CODEX_SKILLS_DIR}"
+
+  if [[ ! -d "${target_dir}" ]]; then
+    SKILLS_RESULT="no repo-managed skills directory"
+    warn "No skills directory found at ${target_dir}."
+    return
+  fi
+
+  SKILLS_RESULT="symlinked"
+  SKILLS_SYMLINKED=0
+
+  for skill_dir in "${target_dir}"/*; do
+    if [[ ! -d "${skill_dir}" ]]; then
+      continue
+    fi
+
+    ln -sfn "${skill_dir}" "${CODEX_SKILLS_DIR}/$(basename "${skill_dir}")"
+    SKILLS_SYMLINKED=$((SKILLS_SYMLINKED + 1))
+  done
+
+  if [[ "${SKILLS_SYMLINKED}" -eq 0 ]]; then
+    SKILLS_RESULT="no skills found"
+  fi
+}
+
 ensure_plugin_managers() {
   clone_if_missing "https://github.com/tarjoilija/zgen.git" "${HOME}/.zgen"
   clone_if_missing "https://github.com/tmux-plugins/tpm" "${HOME}/.tmux/plugins/tpm"
@@ -672,6 +729,7 @@ print_summary() {
   local ssh_key_status="missing"
   local mas_result="included"
   local dock_result="${DOCK_RESULT}"
+  local skills_result="${SKILLS_RESULT}"
 
   if [[ -f "${HOME}/.ssh/id_ed25519" ]]; then
     ssh_key_status="present"
@@ -683,6 +741,10 @@ print_summary() {
 
   if [[ "${DOCK_RESULT}" == "configured" ]]; then
     dock_result="configured (${DOCK_ITEMS_ADDED} added, ${DOCK_ITEMS_SKIPPED} skipped)"
+  fi
+
+  if [[ "${SKILLS_RESULT}" == "symlinked" ]]; then
+    skills_result="symlinked (${SKILLS_SYMLINKED} repo skills)"
   fi
 
   cat <<EOF
@@ -701,6 +763,7 @@ Checks:
   - Brew manifest: ${BREWFILE_USED:-not run}
   - Mac App Store installs: ${mas_result}
   - Dock: ${dock_result}
+  - Codex skills: ${skills_result}
 
 Manual follow-up that may still be needed:
   - Sign into the Mac App Store before rerunning the brew phase if mas installs were skipped.
@@ -741,6 +804,8 @@ phase_dev() {
   install_npm_global_packages
   install_uv_tools
   install_cargo_packages
+  ensure_dotfiles_repo
+  symlink_repo_skills
   ensure_plugin_managers
   start_brew_services
 }
@@ -758,6 +823,7 @@ main() {
 
   require_macos
   validate_setup_mode
+  resolve_dotfiles_dir
   brew_shellenv
 
   run_step preflight "Verify base macOS tooling" phase_preflight
