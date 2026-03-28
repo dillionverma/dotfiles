@@ -26,5 +26,6 @@ link_file() {
 }
 
 link_file "${DOTFILES_DIR}/.zshrc" "${HOME}/.zshrc"
+link_file "${DOTFILES_DIR}/.config/ghostty/config" "${HOME}/.config/ghostty/config"
 link_file "${DOTFILES_DIR}/.config/ohmyposh/vesper.omp.json" "${HOME}/.config/ohmyposh/vesper.omp.json"
 link_file "${DOTFILES_DIR}/.superset/themes/vesper.json" "${HOME}/.superset/themes/vesper.json"
