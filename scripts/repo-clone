@@ -1,0 +1,293 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+PROGRAM_NAME="$(basename "$0")"
+REPO_ROOT_DEFAULT="${REPO_ROOT:-$HOME/src}"
+DEFAULT_HOST="github.com"
+DEST_NAME=""
+DRY_RUN=0
+HOST="${DEFAULT_HOST}"
+KEEP_NAMESPACE=0
+NO_GH=0
+PRINT_SHELL_FUNCTION=0
+
+log() {
+  printf '[%s] %s\n' "${PROGRAM_NAME}" "$*" >&2
+}
+
+fail() {
+  printf '[%s] error: %s\n' "${PROGRAM_NAME}" "$*" >&2
+  exit 1
+}
+
+usage() {
+  cat <<'EOF'
+Usage:
+  repo-clone [options] <work|personal|sandbox> <repo>
+  repo-clone --print-shell-function
+
+Clone targets:
+  - OWNER/REPO
+  - HOST/OWNER/REPO
+  - https://host/owner/repo.git
+  - ssh://git@host/owner/repo.git
+  - git@host:owner/repo.git
+
+Options:
+  --root PATH              Override the clone root. Defaults to $REPO_ROOT or ~/src.
+  --host HOST              Host to use for OWNER/REPO shorthand. Default: github.com
+  --dest-name NAME         Override the final directory name.
+  --keep-namespace         Keep the namespace path for personal/sandbox clones too.
+  --no-gh                  Always use git clone, even for GitHub repos.
+  --dry-run                Print the resolved destination and clone method without cloning.
+  --print-shell-function   Print a shell helper that clones and then cds into the repo.
+  -h, --help               Show this help text.
+
+Examples:
+  repo-clone work acme/api
+  repo-clone personal dillion/dotfiles
+  repo-clone sandbox github.com/someone/test-repo
+  repo-clone work git@github.com:acme/platform-api.git
+EOF
+}
+
+print_shell_function() {
+  cat <<'EOF'
+repo_cd() {
+  local dir
+  dir="$(repo-clone "$@")" || return
+  cd "$dir" || return
+}
+EOF
+}
+
+require_command() {
+  command -v "$1" >/dev/null 2>&1 || fail "Missing required command: $1"
+}
+
+has_command() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+is_empty_directory() {
+  local path="$1"
+  [[ -d "${path}" ]] || return 1
+  [[ -z "$(find "${path}" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]]
+}
+
+parse_args() {
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --root)
+        shift
+        [[ $# -gt 0 ]] || fail "--root requires a value"
+        REPO_ROOT_DEFAULT="$1"
+        ;;
+      --host)
+        shift
+        [[ $# -gt 0 ]] || fail "--host requires a value"
+        HOST="$1"
+        ;;
+      --dest-name)
+        shift
+        [[ $# -gt 0 ]] || fail "--dest-name requires a value"
+        DEST_NAME="$1"
+        ;;
+      --keep-namespace)
+        KEEP_NAMESPACE=1
+        ;;
+      --no-gh)
+        NO_GH=1
+        ;;
+      --dry-run)
+        DRY_RUN=1
+        ;;
+      --print-shell-function)
+        PRINT_SHELL_FUNCTION=1
+        ;;
+      -h|--help)
+        usage
+        exit 0
+        ;;
+      --)
+        shift
+        break
+        ;;
+      -*)
+        fail "Unknown option: $1"
+        ;;
+      *)
+        break
+        ;;
+    esac
+    shift
+  done
+
+  if [[ "${PRINT_SHELL_FUNCTION}" -eq 1 ]]; then
+    [[ $# -eq 0 ]] || fail "--print-shell-function does not accept extra arguments"
+    print_shell_function
+    exit 0
+  fi
+
+  [[ $# -eq 2 ]] || {
+    usage >&2
+    exit 1
+  }
+
+  BUCKET="$1"
+  REPO_SPEC="$2"
+}
+
+normalize_repo_path() {
+  local path="$1"
+
+  path="${path#/}"
+  path="${path%/}"
+  path="${path%.git}"
+  printf '%s\n' "${path}"
+}
+
+parse_repo_spec() {
+  local spec="$1"
+  local repo_path=""
+
+  spec="${spec%/}"
+  [[ -n "${spec}" ]] || fail "Repository spec cannot be empty"
+  SPEC_KIND=""
+  CLONE_SOURCE=""
+
+  if [[ "${spec}" =~ ^[[:alnum:]_.-]+/[[:alnum:]_.-]+$ ]]; then
+    SPEC_KIND="owner_repo"
+    repo_path="${spec}"
+  elif [[ "${spec}" =~ ^[[:alnum:].-]+/.+/.+$ ]]; then
+    SPEC_KIND="host_path"
+    HOST="${spec%%/*}"
+    repo_path="${spec#*/}"
+  elif [[ "${spec}" =~ ^[[:alpha:]][[:alpha:][:digit:]+.-]*:// ]]; then
+    SPEC_KIND="url"
+    local url_without_scheme="${spec#*://}"
+    if [[ "${url_without_scheme}" == *@* ]]; then
+      url_without_scheme="${url_without_scheme#*@}"
+    fi
+    HOST="${url_without_scheme%%/*}"
+    repo_path="${url_without_scheme#*/}"
+    [[ -n "${HOST}" && "${repo_path}" != "${url_without_scheme}" ]] || fail "Unsupported URL format: ${spec}"
+    CLONE_SOURCE="${spec}"
+  elif [[ "${spec}" =~ ^([^@]+@)?([^:]+):/?(.+)$ ]]; then
+    SPEC_KIND="scp"
+    HOST="${BASH_REMATCH[2]}"
+    repo_path="${BASH_REMATCH[3]}"
+    CLONE_SOURCE="${spec}"
+  else
+    fail "Unsupported repository spec: ${spec}"
+  fi
+
+  repo_path="$(normalize_repo_path "${repo_path}")"
+  [[ "${repo_path}" == */* ]] || fail "Expected a namespace and repo name in: ${spec}"
+
+  NAMESPACE_PATH="${repo_path%/*}"
+  REPO_NAME="${repo_path##*/}"
+  [[ -n "${NAMESPACE_PATH}" && -n "${REPO_NAME}" ]] || fail "Could not determine destination from: ${spec}"
+
+  if [[ -z "${CLONE_SOURCE:-}" ]]; then
+    CLONE_SOURCE="https://${HOST}/${repo_path}.git"
+  fi
+
+  if [[ "${NO_GH}" -eq 0 && "${SPEC_KIND}" == "owner_repo" && "${HOST}" == "github.com" && "${NAMESPACE_PATH}" != */* && -n "${NAMESPACE_PATH}" ]]; then
+    GH_REPO="${NAMESPACE_PATH}/${REPO_NAME}"
+  else
+    GH_REPO=""
+  fi
+}
+
+build_destination() {
+  local repo_root="$1"
+  local namespace_component=""
+  local leaf_name="${DEST_NAME:-$REPO_NAME}"
+
+  [[ -n "${leaf_name}" ]] || fail "Destination directory name cannot be empty"
+  [[ "${leaf_name}" != */* ]] || fail "Destination directory name cannot contain /"
+
+  case "${BUCKET}" in
+    work)
+      namespace_component="${NAMESPACE_PATH}"
+      ;;
+    personal|sandbox)
+      if [[ "${KEEP_NAMESPACE}" -eq 1 ]]; then
+        namespace_component="${NAMESPACE_PATH}"
+      fi
+      ;;
+    *)
+      fail "Unknown bucket: ${BUCKET}. Expected work, personal, or sandbox"
+      ;;
+  esac
+
+  if [[ -n "${namespace_component}" ]]; then
+    DESTINATION="${repo_root%/}/${BUCKET}/${namespace_component}/${leaf_name}"
+  else
+    DESTINATION="${repo_root%/}/${BUCKET}/${leaf_name}"
+  fi
+}
+
+ensure_destination_available() {
+  if [[ -d "${DESTINATION}/.git" ]]; then
+    log "Repository already exists at ${DESTINATION}"
+    printf '%s\n' "${DESTINATION}"
+    exit 0
+  fi
+
+  if [[ -e "${DESTINATION}" && ! -d "${DESTINATION}" ]]; then
+    fail "Destination exists and is not a directory: ${DESTINATION}"
+  fi
+
+  if [[ -d "${DESTINATION}" ]] && ! is_empty_directory "${DESTINATION}"; then
+    fail "Destination directory already exists and is not empty: ${DESTINATION}"
+  fi
+
+  mkdir -p "$(dirname "${DESTINATION}")"
+}
+
+clone_repo() {
+  local clone_method="git"
+
+  require_command git
+
+  if [[ -n "${GH_REPO}" && "${NO_GH}" -eq 0 ]] && has_command gh; then
+    clone_method="gh"
+  fi
+
+  log "Bucket: ${BUCKET}"
+  log "Source: ${REPO_SPEC}"
+  log "Destination: ${DESTINATION}"
+  log "Method: ${clone_method}"
+
+  if [[ "${DRY_RUN}" -eq 1 ]]; then
+    if [[ "${clone_method}" == "gh" ]]; then
+      log "Dry run command: gh repo clone ${GH_REPO} ${DESTINATION}"
+    else
+      log "Dry run command: git clone ${CLONE_SOURCE} ${DESTINATION}"
+    fi
+    printf '%s\n' "${DESTINATION}"
+    return
+  fi
+
+  if [[ "${clone_method}" == "gh" ]]; then
+    require_command gh
+    gh repo clone "${GH_REPO}" "${DESTINATION}" >&2
+  else
+    git clone -- "${CLONE_SOURCE}" "${DESTINATION}" >&2
+  fi
+
+  printf '%s\n' "${DESTINATION}"
+}
+
+main() {
+  parse_args "$@"
+  parse_repo_spec "${REPO_SPEC}"
+  build_destination "${REPO_ROOT_DEFAULT}"
+  ensure_destination_available
+  clone_repo
+}
+
+main "$@"

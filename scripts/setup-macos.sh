@@ -641,7 +641,8 @@ configure_dock() {
 }
 
 apply_macos_defaults() {
-  defaults write -g InitialKeyRepeat -int 10
+  defaults write -g InitialKeyRepeat -int 20
+  # The old branch used 1.15 here, but KeyRepeat expects an integer.
   defaults write -g KeyRepeat -int 1
   defaults write -g ApplePressAndHoldEnabled -bool false
   defaults write -g NSAutomaticSpellingCorrectionEnabled -bool false
