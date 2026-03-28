@@ -99,7 +99,7 @@ scripts/repo-clone personal dillion/dotfiles
 scripts/repo-clone --print-shell-function
 ```
 
-Track shell config from this repo by linking the checked-in zsh config into your home directory:
+Track shell config, the Oh My Posh theme, and the Superset Vesper theme from this repo by linking the checked-in files into your home directory:
 
 ```bash
 ./scripts/link-dotfiles.sh
