@@ -59,7 +59,7 @@ alias ls='eza --group-directories-first --icons=auto'
 alias ll='eza -lah --group-directories-first --icons=auto'
 alias la='eza -la --group-directories-first --icons=auto'
 alias lt='eza --tree --level=2 --icons=auto'
-alias cat='bat --paging=never --style=plain'
+alias cat='bat --paging=never --style="numbers,changes,header"'
 alias g='git'
 alias reload='source ~/.zshrc'
 
