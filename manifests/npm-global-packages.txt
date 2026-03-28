@@ -1,0 +1,4 @@
+# Installed after nvm + Node LTS are available.
+typescript
+typescript-language-server
+prettier

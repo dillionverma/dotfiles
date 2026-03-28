@@ -1,0 +1,11 @@
+# App paths are added in order if present.
+/System/Library/CoreServices/Finder.app
+/Applications/Ghostty.app
+/Applications/Zed.app
+/Applications/Slack.app
+/Applications/Figma.app
+/Applications/Notion.app
+/Applications/Bitwarden.app
+/Applications/Spotify.app
+/System/Applications/System Settings.app
+${HOME}/Downloads

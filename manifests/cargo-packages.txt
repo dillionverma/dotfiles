@@ -1,0 +1,3 @@
+# Installed via `cargo install --locked`.
+cargo-nextest
+cargo-watch
