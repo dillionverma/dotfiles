@@ -1,0 +1,83 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "version": 4,
+  "final_space": true,
+  "blocks": [
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "type": "root",
+          "style": "plain",
+          "foreground": "#ff8080",
+          "template": "  "
+        },
+        {
+          "type": "session",
+          "style": "plain",
+          "foreground": "#a0e9d6",
+          "template": " {{ .UserName }}@{{ .HostName }} "
+        },
+        {
+          "type": "path",
+          "style": "powerline",
+          "background": "#1f1f1f",
+          "foreground": "#ffffff",
+          "powerline_symbol": "",
+          "template": " {{ .Path }} ",
+          "options": {
+            "style": "powerlevel"
+          }
+        },
+        {
+          "type": "git",
+          "style": "powerline",
+          "background": "#99ffe4",
+          "foreground": "#101010",
+          "powerline_symbol": "",
+          "template": " {{ .HEAD }} ",
+          "options": {
+            "fetch_status": true,
+            "fetch_upstream_icon": true
+          }
+        },
+        {
+          "type": "status",
+          "style": "powerline",
+          "background": "#f5a97f",
+          "foreground": "#101010",
+          "powerline_symbol": "",
+          "template": " {{ if gt .Code 0 }}✕ {{ .Code }}{{ else }}{{ end }} ",
+          "options": {
+            "always_enabled": true
+          }
+        }
+      ]
+    },
+    {
+      "type": "rprompt",
+      "segments": [
+        {
+          "type": "python",
+          "style": "powerline",
+          "background": "#ffc799",
+          "foreground": "#101010",
+          "powerline_symbol": "",
+          "template": "  {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }} "
+        },
+        {
+          "type": "node",
+          "style": "powerline",
+          "background": "#b8a1ff",
+          "foreground": "#101010",
+          "powerline_symbol": "",
+          "template": "  {{ .Full }} ",
+          "options": {
+            "fetch_version": true
+          }
+        }
+      ]
+    }
+  ]
+}

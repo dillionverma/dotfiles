@@ -135,7 +135,7 @@ if [[ -r "$ZSH_PLUGIN_DIR/fast-syntax-highlighting/fast-syntax-highlighting.plug
 fi
 
 if [[ -o zle && "$TERM_PROGRAM" != "Apple_Terminal" ]] && command -v oh-my-posh >/dev/null 2>&1; then
-  eval "$(oh-my-posh init zsh --config "$HOME/.config/ohmyposh/dillion.omp.json")"
+  eval "$(oh-my-posh init zsh --config "$HOME/.config/ohmyposh/vesper.omp.json")"
 fi
 
 if command -v infisical >/dev/null 2>&1; then

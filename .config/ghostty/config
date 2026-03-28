@@ -1,0 +1,55 @@
+# fonts
+font-size = 16
+font-style = medium
+bold-is-bright = true
+theme = vesper
+font-family = "JetBrainsMono Nerd Font Mono"
+
+# cursor
+cursor-style = block
+cursor-style-blink = false
+cursor-click-to-move = true
+
+# clipboard
+copy-on-select = clipboard
+clipboard-trim-trailing-spaces = true
+clipboard-paste-protection = true
+
+# mouse
+mouse-scroll-multiplier = 2
+mouse-hide-while-typing = true
+focus-follows-mouse = true
+right-click-action = copy-or-paste
+
+# window
+initial-window = true
+resize-overlay = never
+background-opacity = 0.85
+window-save-state = always
+window-step-resize = false
+background-blur-radius = 15
+window-padding-balance = true
+confirm-close-surface = false
+
+# notifications
+notify-on-command-finish = unfocused
+notify-on-command-finish-action = no-bell,notify
+notify-on-command-finish-after = 10s
+
+# quick terminal
+quick-terminal-position = top
+quick-terminal-size = 40%
+quick-terminal-autohide = true
+keybind = global:cmd+backquote=toggle_quick_terminal
+
+# behavior
+auto-update = check
+auto-update-channel = stable
+quit-after-last-window-closed = true
+shell-integration = detect
+shell-integration-features = cursor,sudo,title,ssh-env,ssh-terminfo,path
+
+# macos
+macos-option-as-alt = true
+macos-titlebar-style = transparent
+macos-icon = retro
