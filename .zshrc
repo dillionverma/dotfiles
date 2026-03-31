@@ -76,7 +76,7 @@ alias gco='git checkout'
 
 # pnpm helpers.
 alias p='pnpm'
-alias pi='pnpm install'
+# alias pi='pnpm install'
 alias pd='pnpm dev'
 alias pb='pnpm build'
 
