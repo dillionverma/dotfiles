@@ -67,7 +67,7 @@ The installer sets up:
 
 - Homebrew packages from `Brewfile.core` or `Brewfile.full`
 - Git, SSH, and `gh` authentication
-- Rust, `nvm` + Node LTS, npm globals, `uv` tools, and cargo packages
+- Rust, `mise` with Node and Bun, npm globals, `uv` tools, and cargo packages
 - PostgreSQL and Redis via Homebrew
 - macOS defaults and Dock items from `manifests/dock-items.txt`
 
@@ -99,7 +99,7 @@ scripts/repo-clone personal dillion/dotfiles
 scripts/repo-clone --print-shell-function
 ```
 
-Track shell config, the Oh My Posh theme, Ghostty config, and the Superset Vesper theme from this repo by linking the checked-in files into your home directory:
+Track shell, Vim, mise, Oh My Posh, Ghostty, and the Superset Vesper theme from this repo by linking the checked-in files into your home directory:
 
 ```bash
 ./scripts/link-dotfiles.sh

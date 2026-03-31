@@ -24,10 +24,11 @@ copy_local_source() {
   local src="$1"
   local dest="$2"
 
-  mkdir -p "${dest}/scripts" "${dest}/manifests"
+  mkdir -p "${dest}/scripts" "${dest}/manifests" "${dest}/.config/mise"
   cp "${src}/Brewfile.core" "${dest}/Brewfile.core"
   cp "${src}/Brewfile.full" "${dest}/Brewfile.full"
   cp "${src}/README.md" "${dest}/README.md"
+  cp "${src}/.config/mise/config.toml" "${dest}/.config/mise/config.toml"
   cp "${src}/scripts/setup-macos.sh" "${dest}/scripts/setup-macos.sh"
   cp "${src}/manifests/npm-global-packages.txt" "${dest}/manifests/npm-global-packages.txt"
   cp "${src}/manifests/uv-tools.txt" "${dest}/manifests/uv-tools.txt"
@@ -38,10 +39,11 @@ copy_local_source() {
 download_remote_source() {
   local dest="$1"
 
-  mkdir -p "${dest}/scripts" "${dest}/manifests"
+  mkdir -p "${dest}/scripts" "${dest}/manifests" "${dest}/.config/mise"
   curl -fsSL "${INSTALL_BASE_URL%/}/Brewfile.core" -o "${dest}/Brewfile.core"
   curl -fsSL "${INSTALL_BASE_URL%/}/Brewfile.full" -o "${dest}/Brewfile.full"
   curl -fsSL "${INSTALL_BASE_URL%/}/README.md" -o "${dest}/README.md"
+  curl -fsSL "${INSTALL_BASE_URL%/}/.config/mise/config.toml" -o "${dest}/.config/mise/config.toml"
   curl -fsSL "${INSTALL_BASE_URL%/}/scripts/setup-macos.sh" -o "${dest}/scripts/setup-macos.sh"
   curl -fsSL "${INSTALL_BASE_URL%/}/manifests/npm-global-packages.txt" -o "${dest}/manifests/npm-global-packages.txt"
   curl -fsSL "${INSTALL_BASE_URL%/}/manifests/uv-tools.txt" -o "${dest}/manifests/uv-tools.txt"

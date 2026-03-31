@@ -12,6 +12,7 @@ NPM_PACKAGES_FILE="${NPM_PACKAGES_FILE:-${INSTALLER_ROOT}/manifests/npm-global-p
 UV_TOOLS_FILE="${UV_TOOLS_FILE:-${INSTALLER_ROOT}/manifests/uv-tools.txt}"
 CARGO_PACKAGES_FILE="${CARGO_PACKAGES_FILE:-${INSTALLER_ROOT}/manifests/cargo-packages.txt}"
 DOCK_ITEMS_FILE="${DOCK_ITEMS_FILE:-${INSTALLER_ROOT}/manifests/dock-items.txt}"
+MISE_CONFIG_FILE="${MISE_CONFIG_FILE:-${INSTALLER_ROOT}/.config/mise/config.toml}"
 SETUP_MODE="${SETUP_MODE:-full}"
 COMPUTER_NAME="${COMPUTER_NAME:-mbp}"
 GIT_USER_NAME="${GIT_USER_NAME:-Dillion Verma}"
@@ -446,43 +447,67 @@ install_rust() {
   curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs | sh -s -- -y
 }
 
-install_nvm() {
-  if [[ -d "${HOME}/.nvm" ]]; then
-    log "nvm already installed."
+sync_mise_global_config() {
+  file_exists_or_warn "${MISE_CONFIG_FILE}" || return 1
+  mkdir -p "${HOME}/.config/mise"
+  cp "${MISE_CONFIG_FILE}" "${HOME}/.config/mise/config.toml"
+}
+
+install_mise_tools() {
+  local tool=""
+  local version=""
+  local tools=()
+
+  command -v mise >/dev/null 2>&1 || {
+    warn "mise is unavailable; skipping mise-managed runtimes."
+    return
+  }
+
+  sync_mise_global_config || return
+
+  while IFS='=' read -r tool version || [[ -n "${tool}${version}" ]]; do
+    tool="$(trim "${tool}")"
+    version="$(trim "${version}")"
+
+    case "${tool}" in
+      ''|\#*|'[tools]'*)
+        continue
+        ;;
+    esac
+
+    version="${version#\"}"
+    version="${version%\"}"
+    [[ -n "${version}" ]] || continue
+    tools+=("${tool}@${version}")
+  done <"${MISE_CONFIG_FILE}"
+
+  if [[ "${#tools[@]}" -eq 0 ]]; then
+    warn "No mise tools were configured in ${MISE_CONFIG_FILE}."
     return
   fi
 
-  curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
+  mise install -y "${tools[@]}" >/dev/null
 }
 
-load_nvm() {
-  local nvm_dir="${HOME}/.nvm"
-
-  if [[ -s "${nvm_dir}/nvm.sh" ]]; then
-    # shellcheck disable=SC1090
-    . "${nvm_dir}/nvm.sh"
-    return 0
-  fi
-
-  return 1
-}
-
-ensure_node_lts() {
-  if ! load_nvm; then
-    warn "nvm is unavailable in the current shell. Skipping Node.js install."
+run_npm() {
+  if command -v npm >/dev/null 2>&1; then
+    npm "$@"
     return
   fi
 
-  nvm install --lts >/dev/null
-  nvm alias default 'lts/*' >/dev/null
-  nvm use default >/dev/null
+  if command -v mise >/dev/null 2>&1; then
+    mise exec -- npm "$@"
+    return
+  fi
+
+  return 127
 }
 
 install_npm_global_packages() {
   local package
 
   file_exists_or_warn "${NPM_PACKAGES_FILE}" || return
-  command -v npm >/dev/null 2>&1 || {
+  run_npm --version >/dev/null 2>&1 || {
     warn "npm is unavailable; skipping npm global packages."
     return
   }
@@ -495,12 +520,12 @@ install_npm_global_packages() {
         ;;
     esac
 
-    if npm list -g --depth=0 "${package}" >/dev/null 2>&1; then
+    if run_npm list -g --depth=0 "${package}" >/dev/null 2>&1; then
       log "npm package already installed: ${package}"
       continue
     fi
 
-    npm install -g "${package}" >/dev/null
+    run_npm install -g "${package}" >/dev/null
   done <"${NPM_PACKAGES_FILE}"
 }
 
@@ -708,7 +733,7 @@ Manual follow-up that may still be needed:
   - Re-run with --only brew after signing into the Mac App Store if you want the mas apps installed.
   - Verify your SSH key exists in GitHub: https://github.com/settings/keys
   - Log out and back in so keyboard repeat changes fully apply.
-  - Restart your shell so Homebrew, rustup, nvm, and any global tool shims are loaded.
+  - Restart your shell so Homebrew, rustup, mise, and any global tool shims are loaded.
 EOF
 }
 
@@ -737,8 +762,7 @@ phase_auth() {
 
 phase_dev() {
   install_rust
-  install_nvm
-  ensure_node_lts
+  install_mise_tools
   install_npm_global_packages
   install_uv_tools
   install_cargo_packages
