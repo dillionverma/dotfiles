@@ -105,6 +105,12 @@ Track shell config, the Oh My Posh theme, Ghostty config, and the Superset Vespe
 ./scripts/link-dotfiles.sh
 ```
 
+Install Vim plugins managed by this repo with:
+
+```bash
+./scripts/install-vim-plugins.sh
+```
+
 ## Contributing
 
 No `CONTRIBUTING.md` file is checked into this repo yet.
