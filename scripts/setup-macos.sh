@@ -200,6 +200,7 @@ run_step() {
     return
   fi
 
+  # shellcheck disable=SC2034
   CURRENT_PHASE="${phase}"
   append_csv_value RAN_PHASES "${phase}"
   log "Running ${phase}: ${description}"
@@ -263,10 +264,10 @@ resolve_path() {
   local raw_path="$1"
 
   case "${raw_path}" in
-    "~/"*)
+    \~/*)
       printf '%s\n' "${HOME}/${raw_path#~/}"
       ;;
-    '$'{HOME}/*)
+    "\${HOME}/"*)
       printf '%s\n' "${HOME}/${raw_path#\$\{HOME\}/}"
       ;;
     *)
@@ -615,7 +616,7 @@ start_brew_services() {
   local service
 
   require_brew
-  for service in redis postgresql; do
+  for service in redis postgresql@18; do
     if brew list "${service}" >/dev/null 2>&1; then
       brew services start "${service}" >/dev/null
     fi
@@ -676,6 +677,7 @@ apply_macos_defaults() {
 
   defaults write com.apple.finder ShowPathbar -bool true
   defaults write com.apple.finder ShowStatusBar -bool true
+  defaults write com.apple.finder AppleShowAllFiles -bool true
   defaults write com.apple.finder NewWindowTarget -string "PfHm"
   defaults write com.apple.finder QLEnableTextSelection -bool true
 
