@@ -45,7 +45,7 @@ set listchars=tab:»·,trail:·,nbsp:␣
 
 " System clipboard
 if has('clipboard')
-  set clipboard=unnamedplus
+  set clipboard=unnamed,unnamedplus
 endif
 
 " Mouse
