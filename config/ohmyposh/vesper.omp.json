@@ -11,14 +11,13 @@
           "type": "root",
           "style": "plain",
           "foreground": "#ff8080",
-          "template": "  "
+          "template": "# "
         },
         {
           "type": "path",
-          "style": "powerline",
+          "style": "plain",
           "background": "#1f1f1f",
           "foreground": "#ffffff",
-          "powerline_symbol": "",
           "template": " {{ .Path }} ",
           "options": {
             "style": "full"
@@ -26,23 +25,22 @@
         },
         {
           "type": "git",
-          "style": "powerline",
+          "style": "plain",
           "background": "#99ffe4",
           "foreground": "#101010",
-          "powerline_symbol": "",
           "template": " {{ .HEAD }}{{ if and (eq .Ahead 0) (eq .Behind 0) }} ≡{{ end }}{{ if gt .Behind 0 }} ⇣{{ .Behind }}{{ end }}{{ if gt .Ahead 0 }} ⇡{{ .Ahead }}{{ end }} ",
           "options": {
             "fetch_status": true,
-            "fetch_upstream_icon": true
+            "branch_icon": "",
+            "commit_icon": "@"
           }
         },
         {
           "type": "status",
-          "style": "powerline",
+          "style": "plain",
           "background": "#f5a97f",
           "foreground": "#101010",
-          "powerline_symbol": "",
-          "template": " {{ if gt .Code 0 }}✕ {{ .Code }}{{ else }}{{ end }} ",
+          "template": " {{ if gt .Code 0 }}✕ {{ .Code }}{{ else }}{{ end }} ",
           "options": {
             "always_enabled": true
           }
@@ -54,19 +52,17 @@
       "segments": [
         {
           "type": "python",
-          "style": "powerline",
+          "style": "plain",
           "background": "#ffc799",
           "foreground": "#101010",
-          "powerline_symbol": "",
-          "template": "  {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }} "
+          "template": " py {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }} "
         },
         {
           "type": "node",
-          "style": "powerline",
+          "style": "plain",
           "background": "#b8a1ff",
           "foreground": "#101010",
-          "powerline_symbol": "",
-          "template": "  {{ .Full }} ",
+          "template": " node {{ .Full }} ",
           "options": {
             "fetch_version": true
           }
