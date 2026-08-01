@@ -11,42 +11,38 @@
           "type": "root",
           "style": "plain",
           "foreground": "#ff8080",
-          "template": "# "
+          "template": "  "
         },
         {
           "type": "path",
-          "style": "diamond",
-          "leading_diamond": "▐",
-          "trailing_diamond": "▌",
+          "style": "powerline",
           "background": "#1f1f1f",
           "foreground": "#ffffff",
-          "template": "{{ .Path }}",
+          "powerline_symbol": "",
+          "template": " {{ .Path }} ",
           "options": {
             "style": "full"
           }
         },
         {
           "type": "git",
-          "style": "diamond",
-          "leading_diamond": " ▐",
-          "trailing_diamond": "▌",
+          "style": "powerline",
           "background": "#99ffe4",
           "foreground": "#101010",
-          "template": "{{ .HEAD }}{{ if gt .Behind 0 }} ⇣{{ .Behind }}{{ end }}{{ if gt .Ahead 0 }} ⇡{{ .Ahead }}{{ end }}{{ if .Working.Changed }} ±{{ .Working.Changed }}{{ end }}",
+          "powerline_symbol": "",
+          "template": " {{ .HEAD }}{{ if and (eq .Ahead 0) (eq .Behind 0) }} ≡{{ end }}{{ if gt .Behind 0 }} ⇣{{ .Behind }}{{ end }}{{ if gt .Ahead 0 }} ⇡{{ .Ahead }}{{ end }} ",
           "options": {
             "fetch_status": true,
-            "branch_icon": "",
-            "commit_icon": "@"
+            "fetch_upstream_icon": true
           }
         },
         {
           "type": "status",
-          "style": "diamond",
-          "leading_diamond": " ▐",
-          "trailing_diamond": "▌",
+          "style": "powerline",
           "background": "#f5a97f",
           "foreground": "#101010",
-          "template": "{{ if gt .Code 0 }}✕ {{ .Code }}{{ else }}✓{{ end }}",
+          "powerline_symbol": "",
+          "template": " {{ if gt .Code 0 }}✕ {{ .Code }}{{ else }}{{ end }} ",
           "options": {
             "always_enabled": true
           }
@@ -58,21 +54,19 @@
       "segments": [
         {
           "type": "python",
-          "style": "diamond",
-          "leading_diamond": "▐",
-          "trailing_diamond": "▌",
+          "style": "powerline",
           "background": "#ffc799",
           "foreground": "#101010",
-          "template": "py {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }}"
+          "powerline_symbol": "",
+          "template": "  {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }} "
         },
         {
           "type": "node",
-          "style": "diamond",
-          "leading_diamond": " ▐",
-          "trailing_diamond": "▌",
+          "style": "powerline",
           "background": "#b8a1ff",
           "foreground": "#101010",
-          "template": "node {{ .Full }}",
+          "powerline_symbol": "",
+          "template": "  {{ .Full }} ",
           "options": {
             "fetch_version": true
           }
