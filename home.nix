@@ -152,6 +152,9 @@ in
       # OrbStack CLI integration (docker/orb), if installed.
       source ~/.orbstack/shell/init.zsh 2>/dev/null || :
 
+      # Railway CLI env, if installed.
+      source "$HOME/.railway/env" 2>/dev/null || :
+
       mkdir -p "${config.xdg.stateHome}/zsh"
 
       zstyle ':completion:*' menu select
