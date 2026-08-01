@@ -74,10 +74,8 @@
     onActivation = {
       autoUpdate = false;
       upgrade = false;
-      # Migration phase 5 (docs/migration.md): flip to "uninstall" once the
-      # brew-to-nix package moves are verified. "none" keeps undeclared
-      # formulae (postgres, redis, mise, ...) installed until then.
-      cleanup = "none";
+      # Anything not declared here gets uninstalled on switch.
+      cleanup = "uninstall";
     };
 
     # Everything CLI moved to nixpkgs (home.nix). What remains, and why:
