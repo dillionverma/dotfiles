@@ -1,7 +1,11 @@
 # System-level configuration (nix-darwin). User-level config lives in home.nix.
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 {
+  imports = [
+    inputs.home-manager.darwinModules.home-manager
+  ];
+
   ## Core --------------------------------------------------------------------
 
   # Determinate Nix owns the Nix installation, daemon, and GC; nix-darwin must
@@ -28,4 +32,14 @@
   # Nix-aware /etc/zshrc; user zsh config is in home.nix.
   programs.zsh.enable = true;
   environment.shells = [ pkgs.zsh ];
+
+  ## Home Manager ------------------------------------------------------------
+
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    backupFileExtension = "hm-backup";
+    extraSpecialArgs = { inherit inputs; };
+    users.dillion = import ./home.nix;
+  };
 }
