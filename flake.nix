@@ -34,5 +34,11 @@
         specialArgs = { inherit inputs; };
         modules = [ ./darwin.nix ];
       };
+
+      # Scaffold a project: nix flake init -t ~/src/personal/dotfiles#devenv
+      templates.devenv = {
+        path = ./templates/devenv;
+        description = "Project devshell: node + pnpm + postgres + redis (devenv)";
+      };
     };
 }
