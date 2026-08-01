@@ -137,4 +137,54 @@
     nerd-fonts.fira-code
     nerd-fonts.jetbrains-mono
   ];
+
+  ## macOS defaults -----------------------------------------------------------
+  # Replaces the v1 `defaults` and `dock` phases. Keyboard repeat changes
+  # still need a logout/login to fully apply.
+  system.defaults = {
+    NSGlobalDomain = {
+      InitialKeyRepeat = 20;
+      KeyRepeat = 1; # below the GUI minimum on purpose — very fast repeat
+      ApplePressAndHoldEnabled = false;
+      NSAutomaticSpellingCorrectionEnabled = false;
+    };
+
+    finder = {
+      ShowPathbar = true;
+      ShowStatusBar = true;
+      AppleShowAllFiles = true;
+      NewWindowTarget = "Home";
+    };
+
+    dock = {
+      show-recents = false;
+      mru-spaces = false;
+      # Fully declarative dock (replaces dockutil + manifests/dock-items.txt).
+      # /Applications paths only — nix-store paths render as question marks
+      # (nix-darwin#1250). Finder is omitted: it is always present.
+      persistent-apps = [
+        "/Applications/Ghostty.app"
+        "/Applications/Zed.app"
+        "/Applications/Slack.app"
+        "/Applications/Figma.app"
+        "/Applications/Notion.app"
+        "/Applications/Bitwarden.app"
+        "/Applications/Spotify.app"
+        "/System/Applications/System Settings.app"
+      ];
+      persistent-others = [ "/Users/dillion/Downloads" ];
+    };
+
+    # Deliberate security tradeoff: no "downloaded from the internet" prompts.
+    LaunchServices.LSQuarantine = false;
+
+    # Dock icon shows CPU usage.
+    ActivityMonitor.IconType = 5;
+
+    # No first-class nix-darwin options for these; written verbatim.
+    CustomUserPreferences = {
+      "com.apple.TimeMachine".DoNotOfferNewDisksForBackup = true;
+      "com.apple.finder".QLEnableTextSelection = true;
+    };
+  };
 }
