@@ -1,3 +1,0 @@
-# Installed via `uv tool install`.
-ruff
-basedpyright

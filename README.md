@@ -1,120 +1,42 @@
 # Dotfiles
 
-> Personal dotfiles, settings, skills, and bootstrap scripts for a new macOS laptop.
+> Declarative macOS setup: [nix-darwin](https://github.com/nix-darwin/nix-darwin) + [home-manager](https://github.com/nix-community/home-manager) + [nix-homebrew](https://github.com/zhaofengli/nix-homebrew), on [Determinate Nix](https://determinate.systems).
 
-## Table of Contents
+One command applies the whole machine — packages, GUI apps, fonts, macOS defaults, dock, shell, git, vim — atomically, with rollback.
 
-- [Background](#background)
-- [Install](#install)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+## Layout
 
-## Background
+| File | Owns |
+|---|---|
+| `flake.nix` | Inputs (nixpkgs-unstable, nix-darwin, home-manager, nix-homebrew, immutable brew taps) and the `mbp` host |
+| `darwin.nix` | System level: Homebrew casks + Mac App Store apps, fonts, macOS defaults, dock |
+| `home.nix` | User level: CLI packages, zsh, git/gh/ssh, vim, app config files |
+| `config/` | Non-Nix assets referenced from `home.nix` (ghostty, oh-my-posh theme, vimrc, zed, superset) |
+| `templates/devenv/` | Per-project node + postgres + redis environment (`nix flake init -t <this repo>#devenv`) |
+| `scripts/repo-clone` | Clone repos into a consistent `~/src` layout (installed onto PATH by `home.nix`) |
+| `skills/` | Agent skills |
 
-This repo is the source of truth for my local machine setup. It holds the scripts and manifests I use to keep shell tooling, package installs, machine defaults, and Codex skills in one place.
+Design notes: CLI tools come from nixpkgs; GUI apps stay Homebrew casks (self-update, Spotlight, dock icons). Brew taps are immutable flake inputs — ad-hoc `brew tap` is disabled on purpose. There are no global services; databases run per-project via [devenv](https://devenv.sh).
 
-The bootstrap installer is a convenience layer on top of that setup. It is primarily for getting a new macOS laptop into a usable state quickly by installing packages, configuring Git and SSH, setting macOS defaults, and rebuilding the Dock.
-
-## Install
-
-Hosted bootstrap:
-
-```bash
-curl -fsSL https://dillion.io/install.sh | bash
-```
-
-Local checkout:
+## New machine
 
 ```bash
-git clone https://github.com/dillionverma/dotfiles.git
-cd dotfiles
-./setup.sh
+curl -fsSL https://raw.githubusercontent.com/dillionverma/dotfiles/main/bootstrap.sh | bash
 ```
 
-The installer is macOS-only, and some phases require an interactive terminal.
+Details and the manual tail (ssh key, `gh auth login`, App Store sign-in): [docs/bootstrap.md](docs/bootstrap.md).
 
-## Usage
-
-Use the repo as the home for machine setup and bootstrap automation. The main entrypoint is `./setup.sh`.
-
-Common runs:
+## Daily use
 
 ```bash
-./setup.sh
-SETUP_MODE=core ./setup.sh
-./setup.sh --dry-run
-./setup.sh --list-phases
-./setup.sh --only brew,dev
-./setup.sh --skip auth
+drs                                   # rebuild + switch (alias in home.nix)
+darwin-rebuild --list-generations     # history
+sudo darwin-rebuild switch --rollback # undo
+nix flake update                      # bump pinned inputs; commit flake.lock
 ```
 
-Available phases:
+Edit `darwin.nix` / `home.nix` / `config/*`, then `drs`. Zed settings are symlinked out-of-store, so the Zed UI writes straight into this repo.
 
-```text
-preflight
-system
-brew
-auth
-dev
-defaults
-dock
-```
+## Migrating from the v1 bash setup
 
-`SETUP_MODE=full` installs CLI tools, desktop apps, fonts, and App Store apps. `SETUP_MODE=core` installs CLI tools and services only.
-
-The installer sets up:
-
-- Homebrew packages from `Brewfile.core` or `Brewfile.full`
-- Git, SSH, and `gh` authentication
-- Rust, `mise` with Node and Bun, npm globals, `uv` tools, and cargo packages
-- PostgreSQL and Redis via Homebrew
-- macOS defaults and Dock items from `manifests/dock-items.txt`
-
-Other repo contents include:
-
-- `skills/` for Codex skills
-- `manifests/` for package and Dock manifests
-- `scripts/` for machine setup and repo management helpers
-
-Useful environment variables:
-
-- `SETUP_MODE`
-- `COMPUTER_NAME`
-- `GIT_USER_NAME`
-- `GIT_USER_EMAIL`
-- `INSTALL_BASE_URL`
-
-Example:
-
-```bash
-COMPUTER_NAME=work-mbp SETUP_MODE=core ./setup.sh
-```
-
-The repo also includes `scripts/repo-clone` for cloning repositories into a consistent `~/src` layout:
-
-```bash
-scripts/repo-clone work acme/api
-scripts/repo-clone personal dillion/dotfiles
-scripts/repo-clone --print-shell-function
-```
-
-Track shell, Git, Vim, Bat, mise, Oh My Posh, Ghostty, Zed, and the Superset Vesper theme from this repo by linking the checked-in files into your home directory:
-
-```bash
-./scripts/link-dotfiles.sh
-```
-
-Install Vim plugins managed by this repo with:
-
-```bash
-./scripts/install-vim-plugins.sh
-```
-
-## Contributing
-
-No `CONTRIBUTING.md` file is checked into this repo yet.
-
-## License
-
-No license file is checked into this repo yet.
+See [docs/migration.md](docs/migration.md) (one-time; delete after).
