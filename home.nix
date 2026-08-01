@@ -12,9 +12,8 @@ in
   home.stateVersion = "25.05";
 
   ## Packages ----------------------------------------------------------------
-  # CLI tools that lived in the Brewfile, plus former npm/uv/cargo/mise
-  # manifests. Tools with a programs.* module below (git, gh, vim, tmux, bat,
-  # fzf, zoxide, direnv, oh-my-posh) are installed by their module instead.
+  # Tools with a programs.* module below (git, gh, vim, tmux, bat, fzf,
+  # zoxide, direnv, oh-my-posh) are installed by their module instead.
   home.packages = with pkgs; [
     # shell & file tools
     eza
