@@ -15,18 +15,24 @@
         },
         {
           "type": "path",
-          "style": "plain",
+          "style": "diamond",
+          "leading_diamond": "▐",
+          "trailing_diamond": "▌",
+          "background": "#1f1f1f",
           "foreground": "#ffffff",
-          "template": "<b>{{ .Path }}</b>",
+          "template": "{{ .Path }}",
           "options": {
             "style": "full"
           }
         },
         {
           "type": "git",
-          "style": "plain",
-          "foreground": "#99ffe4",
-          "template": " {{ .HEAD }}{{ if gt .Behind 0 }} <#ffc799>⇣{{ .Behind }}</>{{ end }}{{ if gt .Ahead 0 }} <#ffc799>⇡{{ .Ahead }}</>{{ end }}{{ if .Working.Changed }} <#7d7d7d>±{{ .Working.Changed }}</>{{ end }}",
+          "style": "diamond",
+          "leading_diamond": " ▐",
+          "trailing_diamond": "▌",
+          "background": "#99ffe4",
+          "foreground": "#101010",
+          "template": "{{ .HEAD }}{{ if gt .Behind 0 }} ⇣{{ .Behind }}{{ end }}{{ if gt .Ahead 0 }} ⇡{{ .Ahead }}{{ end }}{{ if .Working.Changed }} ±{{ .Working.Changed }}{{ end }}",
           "options": {
             "fetch_status": true,
             "branch_icon": "",
@@ -35,18 +41,15 @@
         },
         {
           "type": "status",
-          "style": "plain",
-          "foreground": "#ff8080",
-          "template": " ✕ {{ .Code }}",
+          "style": "diamond",
+          "leading_diamond": " ▐",
+          "trailing_diamond": "▌",
+          "background": "#f5a97f",
+          "foreground": "#101010",
+          "template": "{{ if gt .Code 0 }}✕ {{ .Code }}{{ else }}✓{{ end }}",
           "options": {
-            "always_enabled": false
+            "always_enabled": true
           }
-        },
-        {
-          "type": "text",
-          "style": "plain",
-          "foreground": "#99ffe4",
-          "template": " ›"
         }
       ]
     },
@@ -55,15 +58,21 @@
       "segments": [
         {
           "type": "python",
-          "style": "plain",
-          "foreground": "#ffc799",
+          "style": "diamond",
+          "leading_diamond": "▐",
+          "trailing_diamond": "▌",
+          "background": "#ffc799",
+          "foreground": "#101010",
           "template": "py {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }}"
         },
         {
           "type": "node",
-          "style": "plain",
-          "foreground": "#b8a1ff",
-          "template": " node {{ .Full }}",
+          "style": "diamond",
+          "leading_diamond": " ▐",
+          "trailing_diamond": "▌",
+          "background": "#b8a1ff",
+          "foreground": "#101010",
+          "template": "node {{ .Full }}",
           "options": {
             "fetch_version": true
           }
