@@ -43,7 +43,7 @@ in
     pnpm
     typescript
     typescript-language-server
-    nodePackages.prettier
+    prettier
 
     # python tooling (replaces `uv tool install`)
     basedpyright
@@ -228,44 +228,45 @@ in
   ## Git ---------------------------------------------------------------------
   programs.git = {
     enable = true;
-    userName = "Dillion Verma";
-    userEmail = "hello@dillion.io";
 
     # Replaces .config/git/ignore.
     ignores = [ "**/.claude/settings.local.json" ];
 
-    delta = {
-      enable = true;
-      options = {
-        navigate = true;
-        line-numbers = true;
-        hyperlinks = true;
-        keep-plus-minus-markers = false;
-        side-by-side = false;
-        syntax-theme = "Catppuccin Macchiato";
-        file-style = ''bold "#99ffe4"'';
-        file-decoration-style = ''"#1c1c1c" ul'';
-        hunk-header-style = ''file line-number bold "#b8a1ff"'';
-        hunk-header-decoration-style = ''"#1c1c1c"'';
-        hunk-header-file-style = ''"#99ffe4" bold'';
-        hunk-header-line-number-style = ''"#ffc799"'';
-        commit-style = ''"#ffc799" bold'';
-        commit-decoration-style = ''"#1c1c1c"'';
-        line-numbers-left-style = ''"#565f89"'';
-        line-numbers-right-style = ''"#565f89"'';
-        line-numbers-minus-style = ''"#ff8080"'';
-        line-numbers-plus-style = ''"#99ffe4"'';
-        line-numbers-zero-style = ''"#7d7d7d"'';
-        minus-style = ''syntax "#201313"'';
-        minus-emph-style = ''syntax "#3a1f1f"'';
-        plus-style = ''syntax "#13211d"'';
-        plus-emph-style = ''syntax "#1d332b"'';
-        zero-style = ''syntax "#151515"'';
-      };
-    };
-
-    extraConfig = {
+    settings = {
+      user.name = "Dillion Verma";
+      user.email = "hello@dillion.io";
       merge.conflictstyle = "zdiff3";
+    };
+  };
+
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+    options = {
+      navigate = true;
+      line-numbers = true;
+      hyperlinks = true;
+      keep-plus-minus-markers = false;
+      side-by-side = false;
+      syntax-theme = "Catppuccin Macchiato";
+      file-style = ''bold "#99ffe4"'';
+      file-decoration-style = ''"#1c1c1c" ul'';
+      hunk-header-style = ''file line-number bold "#b8a1ff"'';
+      hunk-header-decoration-style = ''"#1c1c1c"'';
+      hunk-header-file-style = ''"#99ffe4" bold'';
+      hunk-header-line-number-style = ''"#ffc799"'';
+      commit-style = ''"#ffc799" bold'';
+      commit-decoration-style = ''"#1c1c1c"'';
+      line-numbers-left-style = ''"#565f89"'';
+      line-numbers-right-style = ''"#565f89"'';
+      line-numbers-minus-style = ''"#ff8080"'';
+      line-numbers-plus-style = ''"#99ffe4"'';
+      line-numbers-zero-style = ''"#7d7d7d"'';
+      minus-style = ''syntax "#201313"'';
+      minus-emph-style = ''syntax "#3a1f1f"'';
+      plus-style = ''syntax "#13211d"'';
+      plus-emph-style = ''syntax "#1d332b"'';
+      zero-style = ''syntax "#151515"'';
     };
   };
 
@@ -282,14 +283,15 @@ in
     };
   };
 
-  # Replaces the v1 ~/.ssh/config marker block.
+  # Replaces the v1 ~/.ssh/config marker block (upstream directive names).
   programs.ssh = {
     enable = true;
+    # No implicit defaults; the "*" block below is the whole config.
     enableDefaultConfig = false;
-    matchBlocks."*" = {
-      addKeysToAgent = "yes";
-      identityFile = "~/.ssh/id_ed25519";
-      extraOptions.UseKeychain = "yes";
+    settings."*" = {
+      AddKeysToAgent = "yes";
+      IdentityFile = "~/.ssh/id_ed25519";
+      UseKeychain = "yes";
     };
   };
 
