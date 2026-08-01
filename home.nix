@@ -65,6 +65,9 @@ in
   # Never eval `brew shellenv` — it prepends.
   home.sessionPath = [
     "${config.home.homeDirectory}/Library/pnpm"
+    "${config.home.homeDirectory}/.cargo/bin"
+    "${config.home.homeDirectory}/.local/bin"
+    "${config.home.homeDirectory}/.opencode/bin"
     "/opt/homebrew/bin"
     "/opt/homebrew/sbin"
   ];
@@ -145,6 +148,9 @@ in
     initContent = ''
       setopt AUTO_PUSHD COMPLETE_IN_WORD HIST_REDUCE_BLANKS INTERACTIVE_COMMENTS
       setopt NO_BEEP PUSHD_IGNORE_DUPS PUSHD_SILENT PROMPT_SUBST
+
+      # OrbStack CLI integration (docker/orb), if installed.
+      source ~/.orbstack/shell/init.zsh 2>/dev/null || :
 
       mkdir -p "${config.xdg.stateHome}/zsh"
 
