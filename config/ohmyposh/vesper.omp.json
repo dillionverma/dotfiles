@@ -16,9 +16,8 @@
         {
           "type": "path",
           "style": "plain",
-          "background": "#1f1f1f",
           "foreground": "#ffffff",
-          "template": " {{ .Path }} ",
+          "template": "<b>{{ .Path }}</b>",
           "options": {
             "style": "full"
           }
@@ -26,9 +25,8 @@
         {
           "type": "git",
           "style": "plain",
-          "background": "#99ffe4",
-          "foreground": "#101010",
-          "template": " {{ .HEAD }}{{ if and (eq .Ahead 0) (eq .Behind 0) }} ≡{{ end }}{{ if gt .Behind 0 }} ⇣{{ .Behind }}{{ end }}{{ if gt .Ahead 0 }} ⇡{{ .Ahead }}{{ end }} ",
+          "foreground": "#99ffe4",
+          "template": " {{ .HEAD }}{{ if gt .Behind 0 }} <#ffc799>⇣{{ .Behind }}</>{{ end }}{{ if gt .Ahead 0 }} <#ffc799>⇡{{ .Ahead }}</>{{ end }}{{ if .Working.Changed }} <#7d7d7d>±{{ .Working.Changed }}</>{{ end }}",
           "options": {
             "fetch_status": true,
             "branch_icon": "",
@@ -38,12 +36,17 @@
         {
           "type": "status",
           "style": "plain",
-          "background": "#f5a97f",
-          "foreground": "#101010",
-          "template": " {{ if gt .Code 0 }}✕ {{ .Code }}{{ else }}{{ end }} ",
+          "foreground": "#ff8080",
+          "template": " ✕ {{ .Code }}",
           "options": {
-            "always_enabled": true
+            "always_enabled": false
           }
+        },
+        {
+          "type": "text",
+          "style": "plain",
+          "foreground": "#99ffe4",
+          "template": " ›"
         }
       ]
     },
@@ -53,16 +56,14 @@
         {
           "type": "python",
           "style": "plain",
-          "background": "#ffc799",
-          "foreground": "#101010",
-          "template": " py {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }} "
+          "foreground": "#ffc799",
+          "template": "py {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }}"
         },
         {
           "type": "node",
           "style": "plain",
-          "background": "#b8a1ff",
-          "foreground": "#101010",
-          "template": " node {{ .Full }} ",
+          "foreground": "#b8a1ff",
+          "template": " node {{ .Full }}",
           "options": {
             "fetch_version": true
           }
