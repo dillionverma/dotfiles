@@ -112,7 +112,8 @@
       "slack"
       "spotify"
       "superset"
-      "t3-code"
+      "t3-code" # TODO: drop after moving to nightly (kept so the running app isn't deleted mid-session)
+      "t3-code@nightly" # self-updates to each nightly build
       "tailscale-app" # also provides the tailscale CLI + daemon; no formula needed
       "thebrowsercompany-dia"
       "transmission"
