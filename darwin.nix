@@ -62,6 +62,12 @@
     taps = {
       "homebrew/homebrew-core" = inputs.homebrew-core;
       "homebrew/homebrew-cask" = inputs.homebrew-cask;
+      # In-repo tap for apps with no upstream cask (casks live in taps/).
+      # builtins.path because nix-homebrew wants a package, not a bare path.
+      "dillionverma/homebrew-tap" = builtins.path {
+        path = ./taps/dillionverma;
+        name = "dillionverma-homebrew-tap";
+      };
     };
   };
 
@@ -88,14 +94,20 @@
 
     casks = [
       "1password"
+      "aside"
       "beeper"
+      "betterdisplay"
       "bitwarden"
+      "cap"
+      "chatgpt"
       "claude"
       "claude-code"
       "codex"
       "codex-app"
       "codexbar"
       "conductor"
+      # From the in-repo tap (taps/dillionverma); no upstream cask exists.
+      "dillionverma/tap/db-pro"
       "discord"
       "figma"
       "gcloud-cli"
@@ -117,7 +129,6 @@
       "superset"
       "t3-code@nightly" # self-updates to each nightly build
       "tailscale-app" # also provides the tailscale CLI + daemon; no formula needed
-      "thebrowsercompany-dia"
       "transmission"
       "vibe-island"
       "vlc"
