@@ -16,8 +16,10 @@ in
   # zoxide, direnv, oh-my-posh) are installed by their module instead.
   home.packages = with pkgs; [
     # shell & file tools
+    dust
     eza
     fd
+    ffmpeg
     jq
     ripgrep
     wget
@@ -25,8 +27,10 @@ in
 
     # dev toolchain
     act
+    bitwarden-cli
     cloudflared
     cmake
+    cocoapods
     devenv
     go
     infisical

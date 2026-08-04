@@ -87,6 +87,7 @@
     ];
 
     casks = [
+      "1password"
       "beeper"
       "bitwarden"
       "claude"
@@ -94,10 +95,12 @@
       "codex"
       "codex-app"
       "codexbar"
+      "conductor"
       "discord"
       "figma"
       "gcloud-cli"
       "ghostty"
+      "google-drive"
       "gpg-suite"
       "handbrake-app"
       "hiddenbar"
@@ -116,6 +119,7 @@
       "tailscale-app" # also provides the tailscale CLI + daemon; no formula needed
       "thebrowsercompany-dia"
       "transmission"
+      "vibe-island"
       "vlc"
       "zed"
     ];
