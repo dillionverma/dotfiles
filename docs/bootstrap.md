@@ -6,15 +6,17 @@
 curl -fsSL https://raw.githubusercontent.com/dillionverma/dotfiles/main/bootstrap.sh | bash
 ```
 
-Or clone first and run `./bootstrap.sh`. The script is idempotent — re-run it after the Xcode CLT installer finishes.
+Or clone first and run `./bootstrap.sh`. The script is idempotent and runs end-to-end in one pass: it asks for the computer name and your password once up front, then everything else is unattended.
 
 ## What it does
 
-1. Installs Xcode Command Line Tools (exits so you can re-run once the GUI installer completes)
-2. Installs [Determinate Nix](https://determinate.systems) (flakes enabled, survives macOS upgrades)
-3. Clones this repo to `~/src/personal/dotfiles`
-4. Moves aside any stock `/etc/zshrc`/`/etc/bashrc` (nix-darwin refuses to overwrite files it doesn't recognize)
-5. Runs the first `darwin-rebuild switch` — installs Homebrew (via nix-homebrew), all casks and Mac App Store apps, every CLI tool, fonts, macOS defaults, and the dock
+1. Prompts for the computer name (default: current name) and sets it via `scutil` — per-machine, so rebuilds never rename the machine. Skip the prompt with `COMPUTER_NAME=studio ./bootstrap.sh`.
+2. Primes `sudo` once and keeps it alive for the whole run — a single password prompt.
+3. Installs Xcode Command Line Tools headlessly via `softwareupdate` (falls back to the GUI installer and waits for it — no re-run needed)
+4. Installs [Determinate Nix](https://determinate.systems) (flakes enabled, survives macOS upgrades)
+5. Clones this repo to `~/src/personal/dotfiles`
+6. Moves aside any stock `/etc/zshrc`/`/etc/bashrc` (nix-darwin refuses to overwrite files it doesn't recognize)
+7. Runs the first `darwin-rebuild switch` — installs Homebrew (via nix-homebrew), all casks and Mac App Store apps, every CLI tool, fonts, macOS defaults, and the dock
 
 ## Before running
 

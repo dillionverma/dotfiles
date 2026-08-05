@@ -18,12 +18,8 @@
   nixpkgs.hostPlatform = "aarch64-darwin";
   nixpkgs.config.allowUnfree = true;
 
-  # Replaces the scutil calls from the v1 `system` phase.
-  networking = {
-    computerName = "mbp";
-    hostName = "mbp";
-    localHostName = "mbp";
-  };
+  # Computer name is per-machine: bootstrap.sh prompts once and sets it via
+  # scutil. Deliberately not managed here so rebuilds never rename the machine.
 
   users.users.dillion.home = "/Users/dillion";
 
