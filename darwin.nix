@@ -1,5 +1,6 @@
 # System-level configuration (nix-darwin). User-level config lives in home.nix.
-{ pkgs, config, inputs, ... }:
+# hostName comes from the flake attr name (see mkDarwinHost in flake.nix).
+{ pkgs, config, inputs, hostName, ... }:
 
 {
   imports = [
@@ -36,7 +37,7 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "hm-backup";
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = { inherit inputs hostName; };
     users.dillion = import ./home.nix;
   };
 
@@ -195,6 +196,49 @@
     CustomUserPreferences = {
       "com.apple.TimeMachine".DoNotOfferNewDisksForBackup = true;
       "com.apple.finder".QLEnableTextSelection = true;
+
+      # Raycast owns cmd+space (49 = space keycode). Raycast reads this at
+      # launch; if it is already running, quit and relaunch after a switch.
+      "com.raycast.macos".raycastGlobalHotkey = "Command-49";
+
+      # Disable Spotlight's hotkeys so Raycast can take cmd+space; applies
+      # after logout/login. 64 = Show Spotlight search, 65 = Show Finder
+      # search window. WARNING: this replaces the entire AppleSymbolicHotKeys
+      # dict — any system shortcut customized outside nix reverts to its
+      # macOS default on switch.
+      "com.apple.symbolichotkeys".AppleSymbolicHotKeys = {
+        "64" = {
+          enabled = false;
+          value = {
+            type = "standard";
+            parameters = [ 32 49 1048576 ];
+          };
+        };
+        "65" = {
+          enabled = false;
+          value = {
+            type = "standard";
+            parameters = [ 32 49 1572864 ];
+          };
+        };
+      };
     };
   };
+
+  ## Activation hooks ---------------------------------------------------------
+  # Accept the Xcode license after mas/homebrew have run (postActivation is
+  # the last activation fragment; on first bootstrap Xcode.app only exists
+  # after mas installs it). Runs as root, so no sudo needed. DEVELOPER_DIR is
+  # explicit because a fresh machine's xcode-select still points at the
+  # CommandLineTools, where bare `xcodebuild` errors out.
+  system.activationScripts.postActivation.text = ''
+    if [ -d /Applications/Xcode.app ]; then
+      if ! DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
+          /usr/bin/xcodebuild -license check >/dev/null 2>&1; then
+        echo "accepting Xcode license..." >&2
+        DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
+          /usr/bin/xcodebuild -license accept || true
+      fi
+    fi
+  '';
 }

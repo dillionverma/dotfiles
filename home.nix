@@ -1,5 +1,6 @@
 # User-level configuration (home-manager, wired in via darwin.nix).
-{ pkgs, config, ... }:
+# hostName comes from the flake attr name (via extraSpecialArgs).
+{ pkgs, config, hostName, ... }:
 
 let
   # Canonical checkout of this repo. mkOutOfStoreSymlink and the drs alias
@@ -53,8 +54,8 @@ in
     basedpyright
     ruff
 
-    # rust: rustup keeps its normal toolchain UX (~/.rustup); run
-    # `rustup default stable` once after bootstrap
+    # rust: rustup keeps its normal toolchain UX (~/.rustup); bootstrap.sh
+    # sets `rustup default stable` if no toolchain is configured
     rustup
     cargo-nextest
     cargo-watch
@@ -119,13 +120,6 @@ in
       highlight = "fg=8";
     };
 
-    plugins = [
-      {
-        name = "fast-syntax-highlighting";
-        src = "${pkgs.zsh-fast-syntax-highlighting}/share/zsh/site-functions";
-      }
-    ];
-
     shellAliases = {
       ls = "eza --group-directories-first --icons=auto";
       ll = "eza -lah --group-directories-first --icons=auto";
@@ -146,7 +140,7 @@ in
       pd = "pnpm dev";
       pb = "pnpm build";
       reload = "source ~/.zshrc";
-      drs = "sudo darwin-rebuild switch --flake ${dotfilesDir}#mbp";
+      drs = "sudo darwin-rebuild switch --flake ${dotfilesDir}#${hostName}";
     };
 
     initContent = ''
@@ -212,6 +206,11 @@ in
       if [[ -r "$HOME/.zshrc.local" ]]; then
         source "$HOME/.zshrc.local"
       fi
+
+      # Syntax highlighting (Rust daemon; replaced fast-syntax-highlighting).
+      # Upstream requires this after compinit and any bindkey calls, so keep
+      # it the last line of initContent.
+      eval "$(${pkgs.zsh-patina}/bin/zsh-patina activate)"
     '';
   };
 
@@ -331,6 +330,9 @@ in
   programs.tmux.enable = true;
 
   xdg.configFile."ghostty/config".source = ./config/ghostty/config;
+
+  # zsh-patina syntax highlighting theme (daemon activated in initContent above).
+  xdg.configFile."zsh-patina/config.toml".source = ./config/zsh-patina/config.toml;
 
   # Zed writes to its settings.json from the UI, so it must stay writable:
   # symlink to the repo checkout instead of the read-only nix store.

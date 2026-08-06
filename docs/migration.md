@@ -35,7 +35,7 @@ grep -n shellenv ~/.zprofile 2>/dev/null
 First switch (generates flake.lock — commit it):
 
 ```bash
-sudo nix run nix-darwin/master#darwin-rebuild -- switch --flake .#mbp
+sudo nix run nix-darwin/master#darwin-rebuild -- switch --flake .#mac-mini
 git add flake.lock && git commit -m "chore: lock flake inputs"
 ```
 

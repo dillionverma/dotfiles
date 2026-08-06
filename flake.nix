@@ -29,10 +29,20 @@
 
   outputs =
     inputs@{ nix-darwin, ... }:
+    let
+      # One entry per machine; the attr name flows into the drs alias and
+      # bootstrap.sh (which prompts for it). Add a line per Mac. The computer
+      # name itself is set once by bootstrap.sh via scutil, not managed here.
+      mkDarwinHost =
+        hostName:
+        nix-darwin.lib.darwinSystem {
+          specialArgs = { inherit inputs hostName; };
+          modules = [ ./darwin.nix ];
+        };
+    in
     {
-      darwinConfigurations.mbp = nix-darwin.lib.darwinSystem {
-        specialArgs = { inherit inputs; };
-        modules = [ ./darwin.nix ];
+      darwinConfigurations = {
+        mac-mini = mkDarwinHost "mac-mini";
       };
 
       # Scaffold a project: nix flake init -t ~/src/personal/dotfiles#devenv

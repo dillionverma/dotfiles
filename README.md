@@ -8,7 +8,7 @@ One command applies the whole machine — packages, GUI apps, fonts, macOS defau
 
 | File | Owns |
 |---|---|
-| `flake.nix` | Inputs (nixpkgs-unstable, nix-darwin, home-manager, nix-homebrew, immutable brew taps) and the `mbp` host |
+| `flake.nix` | Inputs (nixpkgs-unstable, nix-darwin, home-manager, nix-homebrew, immutable brew taps) and per-machine hosts via `mkDarwinHost` (currently `mac-mini`) |
 | `darwin.nix` | System level: Homebrew casks + Mac App Store apps, fonts, macOS defaults, dock |
 | `home.nix` | User level: CLI packages, zsh, git/gh/ssh, vim, app config files |
 | `config/` | Non-Nix assets referenced from `home.nix` (ghostty, oh-my-posh theme, vimrc, zed, superset) |
