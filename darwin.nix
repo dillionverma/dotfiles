@@ -122,6 +122,7 @@
       "parsec"
       "raycast"
       "rectangle"
+      "rustdesk"
       "slack"
       "spotify"
       "superset"
