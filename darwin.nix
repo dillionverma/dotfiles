@@ -118,6 +118,7 @@
       "notion-calendar"
       "obs"
       "orbstack"
+      "parsec"
       "raycast"
       "rectangle"
       "slack"
