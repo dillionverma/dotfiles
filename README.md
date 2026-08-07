@@ -36,7 +36,3 @@ nix flake update                      # bump pinned inputs; commit flake.lock
 ```
 
 Edit `darwin.nix` / `home.nix` / `config/*`, then `drs`. Zed settings are symlinked out-of-store, so the Zed UI writes straight into this repo.
-
-## Migrating from the v1 bash setup
-
-See [docs/migration.md](docs/migration.md) (one-time; delete after).

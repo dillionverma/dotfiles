@@ -29,8 +29,13 @@ Or clone first and run `./bootstrap.sh`. The script is idempotent and runs end-t
 ## Manual tail (interactive, can't be declarative)
 
 ```bash
-gh auth login          # upload ~/.ssh/id_ed25519.pub during auth
+gh auth login                              # authenticate gh
+gh ssh-key add ~/.ssh/id_ed25519.pub --title "$(scutil --get ComputerName)"
 ```
+
+`gh ssh-key add` registers the generated key on GitHub — without it, `git`/`repo-clone`
+over SSH fails with `Permission denied (publickey)`. (`gh auth login` alone only covers
+gh's own HTTPS API, not `git`'s SSH remotes.)
 
 ### Raycast permissions
 
