@@ -14,7 +14,19 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+    nix-homebrew = {
+      url = "github:zhaofengli/nix-homebrew";
+      # Pin brew itself here rather than inheriting nix-homebrew's own (older)
+      # pin. The brew executable and homebrew-core evolve in lockstep: formulae
+      # adopt new DSL keywords as soon as brew ships them, so a tap newer than
+      # brew fails to parse. Bump brew-src and homebrew-core TOGETHER.
+      inputs.brew-src.follows = "brew-src";
+    };
+
+    brew-src = {
+      url = "github:Homebrew/brew";
+      flake = false;
+    };
 
     # Immutable, declarative Homebrew taps (consumed in darwin.nix).
     homebrew-core = {
