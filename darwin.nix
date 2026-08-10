@@ -87,6 +87,12 @@
       "googleworkspace-cli" # not packaged in nixpkgs
       "mint" # Swift build is heavy/fragile in nixpkgs on darwin
       "thefuck" # upstream-abandoned; nixpkgs build unreliable
+      # nixpkgs tracks these two badly (as of 2026-08: railway 5.27 vs 5.35
+      # upstream, pscale 0.293 vs 0.312). homebrew-core keeps pace; both are
+      # release-cadence CLIs where being stale means API drift, not just
+      # missing features. `nix flake update homebrew-core` pulls newer formulae.
+      "railway"
+      "pscale"
     ];
 
     casks = [
