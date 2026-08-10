@@ -43,6 +43,7 @@
     {
       darwinConfigurations = {
         mac-mini = mkDarwinHost "mac-mini";
+        mbp = mkDarwinHost "mbp";
       };
 
       # Scaffold a project: nix flake init -t ~/src/personal/dotfiles#devenv
