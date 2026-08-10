@@ -302,6 +302,12 @@ in
       IdentityFile = "~/.ssh/id_ed25519";
       UseKeychain = "yes";
     };
+    settings."mac-mini" = {
+      HostName = "100.105.48.119";
+      User = "dillion";
+      IdentityFile = "~/.ssh/id_ed25519";
+      IdentitiesOnly = "yes";
+    };
   };
 
   ## Vim ---------------------------------------------------------------------
