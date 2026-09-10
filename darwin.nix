@@ -76,7 +76,8 @@
 
     onActivation = {
       autoUpdate = false;
-      upgrade = false;
+      # Without this a tap bump leaves installed casks stale.
+      upgrade = true;
       # Anything not declared here gets uninstalled on switch.
       cleanup = "uninstall";
     };
@@ -104,7 +105,8 @@
       "cap"
       "chatgpt"
       "claude"
-      "claude-code"
+      # @latest channel; only seeds the CLI, which then self-updates into ~/.local.
+      "claude-code@latest"
       "cloudflare-warp"
       "codex"
       "codex-app"
