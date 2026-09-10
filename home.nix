@@ -147,6 +147,9 @@ in
       setopt AUTO_PUSHD COMPLETE_IN_WORD HIST_REDUCE_BLANKS INTERACTIVE_COMMENTS
       setopt NO_BEEP PUSHD_IGNORE_DUPS PUSHD_SILENT PROMPT_SUBST
 
+      # /etc/zshrc evals `brew shellenv`, which prepends /opt/homebrew. Undo it.
+      path=( "''${(@)path:#/opt/homebrew/*}" /opt/homebrew/bin /opt/homebrew/sbin )
+
       # OrbStack CLI integration (docker/orb), if installed.
       source ~/.orbstack/shell/init.zsh 2>/dev/null || :
 
