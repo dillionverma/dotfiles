@@ -85,6 +85,7 @@
     # Everything CLI moved to nixpkgs (home.nix). What remains, and why:
     brews = [
       "mas" # brew bundle shells out to it for masApps
+      "ente-cli" # nixpkgs pins 0.2.3; Homebrew has the current 0.3.0 release
       "googleworkspace-cli" # not packaged in nixpkgs
       "mint" # Swift build is heavy/fragile in nixpkgs on darwin
       "thefuck" # upstream-abandoned; nixpkgs build unreliable
@@ -114,6 +115,7 @@
       # From the in-repo tap (taps/dillionverma); no upstream cask exists.
       "dillionverma/tap/db-pro"
       "discord"
+      "ente-auth"
       "figma"
       "gcloud-cli"
       "ghostty"
