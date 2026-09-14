@@ -140,6 +140,7 @@
       "transmission"
       "vibe-island"
       "vlc"
+      "wallspace"
       "zed"
     ] ++ lib.optional (hostName != "mac-mini") "tailscale-app";
 
