@@ -127,7 +127,7 @@ confirm() {
 }
 
 # /dev/tty exists even with no controlling terminal (CI, ssh -T); test by opening it.
-has_tty() { { : </dev/tty; } 2>/dev/null; }
+has_tty() { ( exec </dev/tty ) 2>/dev/null; }
 
 # Some commands (gh auth login) need a real terminal on stdin.
 with_tty() {
