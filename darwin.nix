@@ -118,6 +118,7 @@
       # From the in-repo tap (taps/dillionverma); no upstream cask exists.
       "dillionverma/tap/db-pro"
       "discord"
+      "droppy" # drag-and-drop file shelf (trial, 2026-09)
       "ente-auth"
       "figma"
       "gcloud-cli"
@@ -125,7 +126,6 @@
       "google-drive"
       "gpg-suite"
       "handbrake-app"
-      "hiddenbar"
       "linear"
       "medis"
       "notion"
@@ -140,6 +140,8 @@
       "spotify"
       "superset"
       "t3-code@nightly" # self-updates to each nightly build
+      # Menu bar manager; maintained Ice fork, needs macOS 26+. Replaced hiddenbar.
+      "thaw"
       "transmission"
       "vibe-island"
       "vlc"
