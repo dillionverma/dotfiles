@@ -112,6 +112,7 @@
       "codex"
       "codex-app"
       "conductor"
+      "cursor-cli"
       # From the in-repo tap (taps/dillionverma); no upstream cask exists.
       "dillionverma/tap/db-pro"
       "discord"
