@@ -100,6 +100,7 @@
     casks = [
       "1password"
       "aside"
+      "bb"
       "beeper"
       "betterdisplay"
       "bitwarden"
