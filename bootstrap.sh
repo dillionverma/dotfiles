@@ -1,9 +1,11 @@
 #!/bin/sh
 # Bootstrap a new Mac: Xcode CLT + Determinate Nix + this flake, in one pass.
 #
-#   sh -c "$(curl -fsSL https://dillion.io/setup)"
+#   curl -fsSL dillion.io/setup | sh
 #
-# POSIX sh on purpose: works under `sh -c`, `curl | sh`, bash, and zsh.
+# POSIX sh on purpose: works under `curl | sh`, `sh -c "$(curl ...)"`, bash, and
+# zsh. Everything is inside main() so a truncated download runs nothing, and
+# prompts read from /dev/tty because stdin is the script under a pipe.
 # Idempotent: re-running skips everything already done.
 #
 # Env overrides (all optional; prompted for when interactive):

@@ -3,10 +3,10 @@
 ## One command
 
 ```bash
-sh -c "$(curl -fsSL https://dillion.io/setup)"
+curl -fsSL dillion.io/setup | sh
 ```
 
-`dillion.io/setup` is a Cloudflare Worker route on the [dillion.io](https://github.com/dillionverma/dillion.io) site that serves this repo's [`bootstrap.sh`](../bootstrap.sh) from `main` (see that repo's `docs/deploy.md`). `curl -fsSL dillion.io/setup | sh` works too; the `sh -c "$(…)"` form is preferred because the whole script is downloaded before anything runs and prompts read from your terminal normally. Or clone first and run `./bootstrap.sh`.
+`dillion.io/setup` is a Cloudflare Worker route on the [dillion.io](https://github.com/dillionverma/dillion.io) site that serves this repo's [`bootstrap.sh`](../bootstrap.sh) from `main` (see that repo's `docs/deploy.md`); plain `http://` is redirected to `https://` and `-L` follows it. The script is safe to pipe: everything is inside `main()`, so a truncated download runs nothing, and prompts read from `/dev/tty`. `sh -c "$(curl -fsSL https://dillion.io/setup)"` works too. Or clone first and run `./bootstrap.sh`.
 
 The script is POSIX `sh`, idempotent, and runs end-to-end in one pass: it asks two questions and your password up front, then everything else is unattended. Re-run it any time; finished steps are skipped.
 
@@ -39,7 +39,7 @@ Then a checklist. When interactive it offers to run `gh auth login`, register th
 Fully unattended example:
 
 ```bash
-COMPUTER_NAME="studio" FLAKE_HOST=studio NONINTERACTIVE=1 sh -c "$(curl -fsSL https://dillion.io/setup)"
+curl -fsSL dillion.io/setup | COMPUTER_NAME="studio" FLAKE_HOST=studio NONINTERACTIVE=1 sh
 ```
 
 ## Before running

@@ -22,7 +22,7 @@ Design notes: CLI tools come from nixpkgs; GUI apps stay Homebrew casks (self-up
 ## New machine
 
 ```bash
-sh -c "$(curl -fsSL https://dillion.io/setup)"
+curl -fsSL dillion.io/setup | sh
 ```
 
 One prompt for the computer name, one for the flake host, one password; then it runs unattended: Xcode CLT, Determinate Nix, clone, first `darwin-rebuild switch`, ssh key, and a checklist for what needs a human (`gh auth login`, Raycast permissions, app sign-ins). Re-runnable. `dillion.io/setup` serves [`bootstrap.sh`](bootstrap.sh) from this repo's `main`; details in [docs/bootstrap.md](docs/bootstrap.md).
@@ -32,7 +32,7 @@ One prompt for the computer name, one for the flake host, one password; then it 
 Everything personal lives in [`me.nix`](me.nix) (username, name, email, GitHub). Fork, then:
 
 ```bash
-DOTFILES_REPO=you/dotfiles sh -c "$(curl -fsSL https://dillion.io/setup)"
+curl -fsSL dillion.io/setup | DOTFILES_REPO=you/dotfiles sh
 ```
 
 When the macOS user differs from `me.nix`, the script asks for your name/email/GitHub and rewrites `me.nix` (committed locally). Machines are one `mkDarwinHost "name"` line each in `flake.nix`; the script adds yours if it is missing.
