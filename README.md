@@ -8,7 +8,8 @@ One command applies the whole machine — packages, GUI apps, fonts, macOS defau
 
 | File | Owns |
 |---|---|
-| `flake.nix` | Inputs (nixpkgs-unstable, nix-darwin, home-manager, nix-homebrew, immutable brew taps) and per-machine hosts via `mkDarwinHost` (currently `mac-mini`) |
+| `me.nix` | Who: username, full name, email, GitHub handle — the only file to edit when forking |
+| `flake.nix` | Inputs (nixpkgs-unstable, nix-darwin, home-manager, nix-homebrew, immutable brew taps) and per-machine hosts via `mkDarwinHost` (`mac-mini`, `mbp`) |
 | `darwin.nix` | System level: Homebrew casks + Mac App Store apps, fonts, macOS defaults, dock |
 | `home.nix` | User level: CLI packages, zsh, git/gh/ssh, vim, app config files |
 | `config/` | Non-Nix assets referenced from `home.nix` (ghostty, oh-my-posh theme, vimrc, zed, superset) |
@@ -21,10 +22,20 @@ Design notes: CLI tools come from nixpkgs; GUI apps stay Homebrew casks (self-up
 ## New machine
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/dillionverma/dotfiles/main/bootstrap.sh | bash
+sh -c "$(curl -fsSL https://dillion.io/setup)"
 ```
 
-Details and the manual tail (ssh key, `gh auth login`, App Store sign-in): [docs/bootstrap.md](docs/bootstrap.md).
+One prompt for the computer name, one for the flake host, one password; then it runs unattended: Xcode CLT, Determinate Nix, clone, first `darwin-rebuild switch`, ssh key, and a checklist for what needs a human (`gh auth login`, Raycast permissions, app sign-ins). Re-runnable. `dillion.io/setup` serves [`bootstrap.sh`](bootstrap.sh) from this repo's `main`; details in [docs/bootstrap.md](docs/bootstrap.md).
+
+## Make it yours
+
+Everything personal lives in [`me.nix`](me.nix) (username, name, email, GitHub). Fork, then:
+
+```bash
+DOTFILES_REPO=you/dotfiles sh -c "$(curl -fsSL https://dillion.io/setup)"
+```
+
+When the macOS user differs from `me.nix`, the script asks for your name/email/GitHub and rewrites `me.nix` (committed locally). Machines are one `mkDarwinHost "name"` line each in `flake.nix`; the script adds yours if it is missing.
 
 ## Daily use
 

@@ -1,6 +1,7 @@
 # System-level configuration (nix-darwin). User-level config lives in home.nix.
-# hostName comes from the flake attr name (see mkDarwinHost in flake.nix).
-{ pkgs, config, inputs, hostName, lib, ... }:
+# hostName comes from the flake attr name (see mkDarwinHost in flake.nix);
+# me (username, fullName, email, github) comes from me.nix.
+{ pkgs, config, inputs, hostName, me, lib, ... }:
 
 {
   imports = [
@@ -15,14 +16,14 @@
   nix.enable = false;
 
   system.stateVersion = 6;
-  system.primaryUser = "dillion";
+  system.primaryUser = me.username;
   nixpkgs.hostPlatform = "aarch64-darwin";
   nixpkgs.config.allowUnfree = true;
 
   # Computer name is per-machine: bootstrap.sh prompts once and sets it via
   # scutil. Deliberately not managed here so rebuilds never rename the machine.
 
-  users.users.dillion.home = "/Users/dillion";
+  users.users.${me.username}.home = "/Users/${me.username}";
 
   # sudo via Touch ID (`darwin-rebuild switch` needs sudo).
   security.pam.services.sudo_local.touchIdAuth = true;
@@ -37,8 +38,8 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "hm-backup";
-    extraSpecialArgs = { inherit inputs hostName; };
-    users.dillion = import ./home.nix;
+    extraSpecialArgs = { inherit inputs hostName me; };
+    users.${me.username} = import ./home.nix;
   };
 
   ## Homebrew ----------------------------------------------------------------
@@ -51,7 +52,7 @@
   nix-homebrew = {
     enable = true;
     enableRosetta = false;
-    user = "dillion";
+    user = me.username;
     # Adopt the existing /opt/homebrew installation on first switch.
     autoMigrate = true;
     # Taps are read-only flake inputs; ad-hoc `brew tap` is disabled by design.
@@ -196,7 +197,7 @@
         "/Applications/Spotify.app"
         "/System/Applications/System Settings.app"
       ];
-      persistent-others = [ "/Users/dillion/Downloads" ];
+      persistent-others = [ "/Users/${me.username}/Downloads" ];
     };
 
     # Deliberate security tradeoff: no "downloaded from the internet" prompts.

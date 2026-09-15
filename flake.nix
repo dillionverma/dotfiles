@@ -42,13 +42,17 @@
   outputs =
     inputs@{ nix-darwin, ... }:
     let
+      # Who this machine belongs to (username, name, email). One file; see me.nix.
+      me = import ./me.nix;
+
       # One entry per machine; the attr name flows into the drs alias and
-      # bootstrap.sh (which prompts for it). Add a line per Mac. The computer
-      # name itself is set once by bootstrap.sh via scutil, not managed here.
+      # bootstrap.sh (which prompts for it and appends a line here for a new
+      # Mac). The computer name itself is set once by bootstrap.sh via scutil,
+      # not managed here.
       mkDarwinHost =
         hostName:
         nix-darwin.lib.darwinSystem {
-          specialArgs = { inherit inputs hostName; };
+          specialArgs = { inherit inputs hostName me; };
           modules = [ ./darwin.nix ];
         };
     in

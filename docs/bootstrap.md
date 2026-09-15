@@ -3,45 +3,64 @@
 ## One command
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/dillionverma/dotfiles/main/bootstrap.sh | bash
+sh -c "$(curl -fsSL https://dillion.io/setup)"
 ```
 
-Or clone first and run `./bootstrap.sh`. The script is idempotent and runs end-to-end in one pass: it asks for the computer name and your password once up front, then everything else is unattended.
+`dillion.io/setup` is a Cloudflare Worker route on the [dillion.io](https://github.com/dillionverma/dillion.io) site that serves this repo's [`bootstrap.sh`](../bootstrap.sh) from `main` (see that repo's `docs/deploy.md`). `curl -fsSL dillion.io/setup | sh` works too; the `sh -c "$(…)"` form is preferred because the whole script is downloaded before anything runs and prompts read from your terminal normally. Or clone first and run `./bootstrap.sh`.
+
+The script is POSIX `sh`, idempotent, and runs end-to-end in one pass: it asks two questions and your password up front, then everything else is unattended. Re-run it any time; finished steps are skipped.
 
 ## What it does
 
-1. Prompts for the computer name (default: current name) and sets it via `scutil` — per-machine, so rebuilds never rename the machine. Skip the prompt with `COMPUTER_NAME=studio ./bootstrap.sh`.
-2. Primes `sudo` once and keeps it alive for the whole run — a single password prompt.
-3. Installs Xcode Command Line Tools headlessly via `softwareupdate` (falls back to the GUI installer and waits for it — no re-run needed)
-4. Accepts the Xcode license if a previous run already installed Xcode (a postActivation hook in darwin.nix covers the first-install case, when Xcode lands mid-switch via masApps)
-5. Installs [Determinate Nix](https://determinate.systems) (flakes enabled, survives macOS upgrades)
-6. Clones this repo to `~/src/personal/dotfiles`
-7. Asks which flake host to build (the `mkDarwinHost` entries in `flake.nix`; skip the prompt with `FLAKE_ATTR=<host>`) — the name drives the flake attr and the `drs` alias. New Mac = one new `mkDarwinHost "name"` line in `flake.nix`
-8. Moves aside any stock `/etc/zshrc`/`/etc/bashrc` (nix-darwin refuses to overwrite files it doesn't recognize)
-9. Runs the first `darwin-rebuild switch` — installs Homebrew (via nix-homebrew), all casks and Mac App Store apps, every CLI tool, fonts, macOS defaults (including disabling Spotlight's cmd+space and pointing Raycast at it), and the dock
-10. Generates `~/.ssh/id_ed25519` (no passphrase; the keychain guards it) and adds it to the macOS keychain
-11. Sets `rustup default stable` if no toolchain is configured
+| # | Step | Skipped when |
+|---|---|---|
+| 1 | Prime `sudo` and keep it alive (single password prompt) | — |
+| 2 | Xcode Command Line Tools, headless via `softwareupdate` (GUI fallback, waits) | already installed |
+| 3 | Computer name via `scutil` (per-machine; rebuilds never rename) | already set |
+| 4 | [Determinate Nix](https://determinate.systems) | `nix` on PATH |
+| 5 | Clone this repo to `~/src/personal/dotfiles`; add the flake host to `flake.nix` if new; personalize `me.nix` if the macOS user differs | already done |
+| 6 | First `darwin-rebuild switch`: Homebrew (via nix-homebrew), casks, Mac App Store apps, CLI tools, fonts, macOS defaults, dock | — (always runs; no-op if unchanged) |
+| 7 | `~/.ssh/id_ed25519` (no passphrase, keychain-guarded), added to the agent | key exists |
+| 8 | `rustup default stable` | toolchain configured |
+
+Then a checklist. When interactive it offers to run `gh auth login`, register the ssh key on GitHub, and open the Raycast privacy panes.
+
+## Prompts and env overrides
+
+| Prompt | Env | Default |
+|---|---|---|
+| Computer name | `COMPUTER_NAME` | current name |
+| Flake host (`darwinConfigurations` attr) | `FLAKE_HOST` | LocalHostName, lowercased |
+| Full name / email / GitHub (only when `me.nix` is for someone else) | `FULL_NAME`, `EMAIL`, `GITHUB_USER` | macOS account name |
+| — | `DOTFILES_REPO` | `dillionverma/dotfiles` (`owner/repo` or URL) |
+| — | `DOTFILES_DIR` | `~/src/personal/dotfiles` |
+| — | `NONINTERACTIVE=1` | take every default, never ask |
+
+Fully unattended example:
+
+```bash
+COMPUTER_NAME="studio" FLAKE_HOST=studio NONINTERACTIVE=1 sh -c "$(curl -fsSL https://dillion.io/setup)"
+```
 
 ## Before running
 
-- **Sign into iCloud + the App Store** in System Settings — `masApps` (Todoist, Timery, Xcode) fail to install otherwise. Xcode is a 10+ GB download; the first switch takes a while.
+- **Sign into iCloud + the App Store** in System Settings — `masApps` (Todoist, Timery, Xcode) fail to install otherwise. The script warns if iCloud is not signed in. Xcode is a 10+ GB download; the first switch takes a while.
+- Apple Silicon only (the flake pins `aarch64-darwin`).
 
 ## Manual tail (interactive, can't be declarative)
 
+The script offers these at the end; if you skipped them:
+
 ```bash
-gh auth login                              # authenticate gh
+gh auth login
 gh ssh-key add ~/.ssh/id_ed25519.pub --title "$(scutil --get ComputerName)"
 ```
 
-`gh ssh-key add` registers the generated key on GitHub — without it, `git`/`repo-clone`
-over SSH fails with `Permission denied (publickey)`. (`gh auth login` alone only covers
-gh's own HTTPS API, not `git`'s SSH remotes.)
+`gh ssh-key add` registers the generated key on GitHub — without it, `git`/`repo-clone` over SSH fails with `Permission denied (publickey)`. (`gh auth login` alone only covers gh's own HTTPS API, not `git`'s SSH remotes.)
 
 ### Raycast permissions
 
-Raycast owns cmd+space (Spotlight's hotkey is disabled declaratively), but
-macOS privacy (TCC) grants can't be automated without MDM. Launch Raycast
-once, then grant access in each pane:
+Raycast owns cmd+space (Spotlight's hotkey is disabled declaratively), but macOS privacy (TCC) grants can't be automated without MDM. Launch Raycast once, then grant access in each pane:
 
 ```bash
 open "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
@@ -50,6 +69,10 @@ open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
 ```
 
 Then: sign into Tailscale, Bitwarden, Slack, etc.; `infisical login`; **log out and back in** so the keyboard-repeat defaults and the cmd+space handoff apply.
+
+## Someone else's Mac
+
+Fork the repo and run with `DOTFILES_REPO=you/dotfiles`. `me.nix` is the only personal file; the script rewrites it for you when your macOS username differs. Machine-specific bits (`mac-mini` ssh alias, tailscale formula vs app) key off the flake host name in `home.nix`/`darwin.nix`.
 
 ## Daily driving
 

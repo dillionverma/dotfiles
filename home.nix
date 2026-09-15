@@ -1,6 +1,6 @@
 # User-level configuration (home-manager, wired in via darwin.nix).
-# hostName comes from the flake attr name (via extraSpecialArgs).
-{ pkgs, config, hostName, ... }:
+# hostName comes from the flake attr name and me from me.nix (via extraSpecialArgs).
+{ pkgs, config, hostName, me, ... }:
 
 let
   # Canonical checkout of this repo. mkOutOfStoreSymlink and the drs alias
@@ -8,8 +8,8 @@ let
   dotfilesDir = "${config.home.homeDirectory}/src/personal/dotfiles";
 in
 {
-  home.username = "dillion";
-  home.homeDirectory = "/Users/dillion";
+  home.username = me.username;
+  home.homeDirectory = "/Users/${me.username}";
   home.stateVersion = "25.05";
 
   ## Packages ----------------------------------------------------------------
@@ -245,8 +245,8 @@ in
     ignores = [ "**/.claude/settings.local.json" ];
 
     settings = {
-      user.name = "Dillion Verma";
-      user.email = "hello@dillion.io";
+      user.name = me.fullName;
+      user.email = me.email;
       merge.conflictstyle = "zdiff3";
     };
   };
@@ -305,9 +305,9 @@ in
       IdentityFile = "~/.ssh/id_ed25519";
       UseKeychain = "yes";
     };
+    # Resolved by Tailscale MagicDNS (no IP to keep in sync).
     settings."mac-mini" = {
-      HostName = "100.119.10.8";
-      User = "dillion";
+      User = me.username;
       IdentityFile = "~/.ssh/id_ed25519";
       IdentitiesOnly = "yes";
     };
