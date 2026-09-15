@@ -1,6 +1,6 @@
 # System-level configuration (nix-darwin). User-level config lives in home.nix.
 # hostName comes from the flake attr name (see mkDarwinHost in flake.nix).
-{ pkgs, config, inputs, hostName, ... }:
+{ pkgs, config, inputs, hostName, lib, ... }:
 
 {
   imports = [
@@ -95,7 +95,7 @@
       # missing features. `nix flake update homebrew-core` pulls newer formulae.
       "railway"
       "pscale"
-    ];
+    ] ++ lib.optional (hostName == "mac-mini") "tailscale"; # system service works before login
 
     casks = [
       "1password"
@@ -137,12 +137,11 @@
       "spotify"
       "superset"
       "t3-code@nightly" # self-updates to each nightly build
-      "tailscale-app" # also provides the tailscale CLI + daemon; no formula needed
       "transmission"
       "vibe-island"
       "vlc"
       "zed"
-    ];
+    ] ++ lib.optional (hostName != "mac-mini") "tailscale-app";
 
     # Requires being signed into the App Store.
     masApps = {

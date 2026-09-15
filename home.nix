@@ -306,7 +306,7 @@ in
       UseKeychain = "yes";
     };
     settings."mac-mini" = {
-      HostName = "100.105.48.119";
+      HostName = "100.119.10.8";
       User = "dillion";
       IdentityFile = "~/.ssh/id_ed25519";
       IdentitiesOnly = "yes";
