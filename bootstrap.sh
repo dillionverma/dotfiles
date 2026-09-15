@@ -110,7 +110,7 @@ ask() {
     if [ -t 0 ]; then
       printf '%s%s%s [%s]: ' "$bold" "$_prompt" "$reset" "$_default" >&2
       read -r _ans || _ans=""
-    elif [ -r /dev/tty ]; then
+    elif has_tty; then
       printf '%s%s%s [%s]: ' "$bold" "$_prompt" "$reset" "$_default" >/dev/tty
       read -r _ans </dev/tty || _ans=""
     fi
@@ -126,9 +126,12 @@ confirm() {
   case "$_yn" in y|Y|yes|YES|Yes) return 0 ;; *) return 1 ;; esac
 }
 
+# /dev/tty exists even with no controlling terminal (CI, ssh -T); test by opening it.
+has_tty() { { : </dev/tty; } 2>/dev/null; }
+
 # Some commands (gh auth login) need a real terminal on stdin.
 with_tty() {
-  if [ -t 0 ]; then "$@"; else "$@" </dev/tty; fi
+  if [ -t 0 ] || ! has_tty; then "$@"; else "$@" </dev/tty; fi
 }
 
 ## Steps -------------------------------------------------------------------
