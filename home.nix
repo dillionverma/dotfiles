@@ -134,6 +134,9 @@ in
       p = "pnpm";
       pd = "pnpm dev";
       pb = "pnpm build";
+      pi = "pnpm install";
+      pt = "pnpm test";
+      px = "pnpm exec";
       reload = "source ~/.zshrc";
       drs = "sudo darwin-rebuild switch --flake ${dotfilesDir}#${hostName}";
     };
