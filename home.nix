@@ -27,15 +27,10 @@ in
     yt-dlp
 
     # dev toolchain
-    act
     bitwarden-cli
     cloudflared
-    cmake
-    cocoapods
     devenv
-    go
     infisical
-    pandoc
     pulumi-bin
     python3
     shellcheck
@@ -57,8 +52,6 @@ in
     # rust: rustup keeps its normal toolchain UX (~/.rustup); bootstrap.sh
     # sets `rustup default stable` if no toolchain is configured
     rustup
-    cargo-nextest
-    cargo-watch
 
     # repo management helper on PATH (replaces the DOTFILES_DIR sourcing trick)
     (pkgs.writeShellScriptBin "repo-clone" (builtins.readFile ./scripts/repo-clone))
@@ -66,8 +59,10 @@ in
 
   home.sessionVariables.PNPM_HOME = "${config.home.homeDirectory}/Library/pnpm";
 
-  # Appended after the nix profiles so nix-provided tools always win over brew.
-  # Never eval `brew shellenv` — it prepends.
+  # home-manager PREPENDS these, so they win over the nix profiles. Keep them
+  # free of anything nix also provides (no `uv tool install` / `cargo install`
+  # of packages listed above) or the nix version gets shadowed. Homebrew is
+  # last on purpose; never eval `brew shellenv` — it prepends.
   home.sessionPath = [
     "${config.home.homeDirectory}/Library/pnpm"
     "${config.home.homeDirectory}/.cargo/bin"
@@ -153,8 +148,6 @@ in
       # OrbStack CLI integration (docker/orb), if installed.
       source ~/.orbstack/shell/init.zsh 2>/dev/null || :
 
-      mkdir -p "${config.xdg.stateHome}/zsh"
-
       zstyle ':completion:*' menu select
       zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' 'r:|[._-]=* r:|=*'
       zstyle ':completion:*' use-cache on
@@ -165,8 +158,7 @@ in
       stty -ixon 2>/dev/null
       bindkey '^[[H' beginning-of-line
       bindkey '^[[F' end-of-line
-      bindkey '^R' history-incremental-search-backward
-      bindkey '^S' history-incremental-search-forward
+      # ^R is fzf's history widget (programs.fzf, sourced above); do not rebind.
 
       take() {
         mkdir -p "$1" && cd "$1"
@@ -183,11 +175,6 @@ in
         dir="$(repo-clone "$@")" || return
         cd "$dir" || return
       }
-
-      # thefuck comes from Homebrew (upstream-abandoned; unreliable in nixpkgs).
-      if command -v thefuck >/dev/null 2>&1; then
-        eval "$(thefuck --alias)"
-      fi
 
       if command -v infisical >/dev/null 2>&1; then
         # Skip cleanly when this machine or shell has not been linked to an
@@ -260,7 +247,7 @@ in
       hyperlinks = true;
       keep-plus-minus-markers = false;
       side-by-side = false;
-      syntax-theme = "Catppuccin Macchiato";
+      syntax-theme = "Vesper"; # from programs.bat.themes below (shared cache)
       file-style = ''bold "#99ffe4"'';
       file-decoration-style = ''"#1c1c1c" ul'';
       hunk-header-style = ''file line-number bold "#b8a1ff"'';
@@ -324,8 +311,12 @@ in
   ## Terminal & app config files ---------------------------------------------
   programs.bat = {
     enable = true;
-    # Note: the "Vesper" bat theme was never installed in v1 either — bat
-    # falls back to its default until the theme is added via programs.bat.themes.
+    # Installed to ~/.config/bat/themes and compiled by `bat cache --build` on
+    # activation; delta reads the same cache for its syntax-theme.
+    themes.Vesper = {
+      src = ./config/bat;
+      file = "Vesper.tmTheme";
+    };
     config = {
       theme = "Vesper";
       style = "numbers,changes,header";
@@ -333,7 +324,14 @@ in
     };
   };
 
-  programs.tmux.enable = true;
+  programs.tmux = {
+    enable = true;
+    terminal = "tmux-256color";
+    mouse = true;
+    historyLimit = 50000;
+    baseIndex = 1;
+    escapeTime = 0;
+  };
 
   xdg.configFile."ghostty/config".source = ./config/ghostty/config;
 

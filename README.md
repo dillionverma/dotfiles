@@ -12,10 +12,9 @@ One command applies the whole machine — packages, GUI apps, fonts, macOS defau
 | `flake.nix` | Inputs (nixpkgs-unstable, nix-darwin, home-manager, nix-homebrew, immutable brew taps) and per-machine hosts via `mkDarwinHost` (`mac-mini`, `mbp`) |
 | `darwin.nix` | System level: Homebrew casks + Mac App Store apps, fonts, macOS defaults, dock |
 | `home.nix` | User level: CLI packages, zsh, git/gh/ssh, vim, app config files |
-| `config/` | Non-Nix assets referenced from `home.nix` (ghostty, oh-my-posh theme, vimrc, zed, superset) |
+| `config/` | Non-Nix assets referenced from `home.nix` (ghostty, oh-my-posh theme, bat theme, vimrc, zed, superset) |
 | `templates/devenv/` | Per-project node + postgres + redis environment (`nix flake init -t <this repo>#devenv`) |
 | `scripts/repo-clone` | Clone repos into a consistent `~/src` layout (installed onto PATH by `home.nix`) |
-| `skills/` | Agent skills |
 
 Design notes: CLI tools come from nixpkgs; GUI apps stay Homebrew casks (self-update, Spotlight, dock icons). Brew taps are immutable flake inputs — ad-hoc `brew tap` is disabled on purpose. There are no global services; databases run per-project via [devenv](https://devenv.sh).
 
@@ -35,7 +34,7 @@ Everything personal lives in [`me.nix`](me.nix) (username, name, email, GitHub).
 curl -fsSL dillion.io/setup | DOTFILES_REPO=you/dotfiles sh
 ```
 
-When the macOS user differs from `me.nix`, the script asks for your name/email/GitHub and rewrites `me.nix` (committed locally). Machines are one `mkDarwinHost "name"` line each in `flake.nix`; the script adds yours if it is missing.
+When the macOS user differs from `me.nix`, the script asks for your name/email/GitHub and rewrites `me.nix` (committed locally). Machines are one `mkDarwinHost "name"` line each in `flake.nix`; the script adds yours if it is missing. Machine-specific bits (the `mac-mini` ssh alias, tailscale formula vs app) key off that host name in `home.nix` / `darwin.nix`.
 
 ## Daily use
 

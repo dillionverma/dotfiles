@@ -35,6 +35,12 @@ set splitbelow
 " Files / history
 set hidden
 set undofile
+" Persistent undo lives under XDG state, not as .un~ files next to the source.
+let s:undodir = expand('~/.local/state/vim/undo')
+if !isdirectory(s:undodir)
+  call mkdir(s:undodir, 'p', 0700)
+endif
+let &undodir = s:undodir . '//'
 set updatetime=250
 set timeoutlen=400
 set nowrap

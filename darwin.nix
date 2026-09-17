@@ -88,8 +88,6 @@
       "mas" # brew bundle shells out to it for masApps
       "ente-cli" # nixpkgs pins 0.2.3; Homebrew has the current 0.3.0 release
       "googleworkspace-cli" # not packaged in nixpkgs
-      "mint" # Swift build is heavy/fragile in nixpkgs on darwin
-      "thefuck" # upstream-abandoned; nixpkgs build unreliable
       # nixpkgs tracks these two badly (as of 2026-08: railway 5.27 vs 5.35
       # upstream, pscale 0.293 vs 0.312). homebrew-core keeps pace; both are
       # release-cadence CLIs where being stale means API drift, not just
@@ -104,6 +102,7 @@
       "bb"
       "beeper"
       "betterdisplay"
+      "bettershot"
       "bitwarden"
       "cap"
       "chatgpt"
@@ -130,6 +129,7 @@
       "notion"
       "notion-calendar"
       "obs"
+      "obsidian"
       "orbstack"
       "parsec"
       "raycast"
@@ -141,6 +141,7 @@
       "t3-code@nightly" # self-updates to each nightly build
       # Menu bar manager; maintained Ice fork, needs macOS 26+. Replaced hiddenbar.
       "thaw"
+      "thunderbird"
       "transmission"
       "vibe-island"
       "vlc"
@@ -157,12 +158,9 @@
   };
 
   ## Fonts -------------------------------------------------------------------
-  # Replaces the three font casks; installed to /Library/Fonts/Nix Fonts.
-  fonts.packages = with pkgs; [
-    fira-code
-    nerd-fonts.fira-code
-    nerd-fonts.jetbrains-mono
-  ];
+  # Installed to /Library/Fonts/Nix Fonts. Ghostty uses "JetBrainsMono Nerd
+  # Font Mono" (config/ghostty/config); oh-my-posh needs its nerd glyphs.
+  fonts.packages = [ pkgs.nerd-fonts.jetbrains-mono ];
 
   ## macOS defaults -----------------------------------------------------------
   # Replaces the v1 `defaults` and `dock` phases. Keyboard repeat changes

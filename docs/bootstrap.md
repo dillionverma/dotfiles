@@ -70,18 +70,9 @@ open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
 
 Then: sign into Tailscale, Bitwarden, Slack, etc.; `infisical login`; **log out and back in** so the keyboard-repeat defaults and the cmd+space handoff apply.
 
-## Someone else's Mac
+## After setup
 
-Fork the repo and run with `DOTFILES_REPO=you/dotfiles`. `me.nix` is the only personal file; the script rewrites it for you when your macOS username differs. Machine-specific bits (`mac-mini` ssh alias, tailscale formula vs app) key off the flake host name in `home.nix`/`darwin.nix`.
-
-## Daily driving
-
-```bash
-drs                    # alias: sudo darwin-rebuild switch --flake ~/src/personal/dotfiles#<host>
-darwin-rebuild --list-generations   # atomic history
-sudo darwin-rebuild switch --rollback
-nix flake update       # bump pinned inputs (commit flake.lock separately)
-```
+Daily use (`drs`, rollback, `nix flake update`) and forking (`me.nix`, `DOTFILES_REPO=`) are covered in the [README](../README.md).
 
 New project with node + postgres + redis:
 

@@ -10,7 +10,6 @@ DRY_RUN=0
 HOST="${DEFAULT_HOST}"
 KEEP_NAMESPACE=0
 NO_GH=0
-PRINT_SHELL_FUNCTION=0
 
 log() {
   printf '[%s] %s\n' "${PROGRAM_NAME}" "$*" >&2
@@ -25,7 +24,6 @@ usage() {
   cat <<'EOF'
 Usage:
   repo-clone [options] <work|personal|sandbox> <repo>
-  repo-clone --print-shell-function
 
 Clone targets:
   - OWNER/REPO
@@ -41,7 +39,6 @@ Options:
   --keep-namespace         Keep the namespace path for personal/sandbox clones too.
   --no-gh                  Always use git clone, even for GitHub repos.
   --dry-run                Print the resolved destination and clone method without cloning.
-  --print-shell-function   Print a shell helper that clones and then cds into the repo.
   -h, --help               Show this help text.
 
 Examples:
@@ -49,16 +46,6 @@ Examples:
   repo-clone personal dillion/dotfiles
   repo-clone sandbox github.com/someone/test-repo
   repo-clone work git@github.com:acme/platform-api.git
-EOF
-}
-
-print_shell_function() {
-  cat <<'EOF'
-repo_cd() {
-  local dir
-  dir="$(repo-clone "$@")" || return
-  cd "$dir" || return
-}
 EOF
 }
 
@@ -103,9 +90,6 @@ parse_args() {
       --dry-run)
         DRY_RUN=1
         ;;
-      --print-shell-function)
-        PRINT_SHELL_FUNCTION=1
-        ;;
       -h|--help)
         usage
         exit 0
@@ -123,12 +107,6 @@ parse_args() {
     esac
     shift
   done
-
-  if [[ "${PRINT_SHELL_FUNCTION}" -eq 1 ]]; then
-    [[ $# -eq 0 ]] || fail "--print-shell-function does not accept extra arguments"
-    print_shell_function
-    exit 0
-  fi
 
   [[ $# -eq 2 ]] || {
     usage >&2
