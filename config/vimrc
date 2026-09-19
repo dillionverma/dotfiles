@@ -118,11 +118,11 @@ nnoremap <leader>h :nohlsearch<CR>
 nnoremap <leader>n :set invnumber invrelativenumber<CR>
 nnoremap <leader>c<Space> :call ToggleCommentLine()<CR>
 xnoremap <leader>c<Space> :<C-u>call ToggleCommentSelection('visual')<CR>
-nnoremap ]h <Plug>(GitGutterNextHunk)
-nnoremap [h <Plug>(GitGutterPrevHunk)
-nnoremap <leader>gp <Plug>(GitGutterPreviewHunk)
-nnoremap <leader>gs <Plug>(GitGutterStageHunk)
-nnoremap <leader>gu <Plug>(GitGutterUndoHunk)
+nmap ]h <Plug>(GitGutterNextHunk)
+nmap [h <Plug>(GitGutterPrevHunk)
+nmap <leader>gp <Plug>(GitGutterPreviewHunk)
+nmap <leader>gs <Plug>(GitGutterStageHunk)
+nmap <leader>gu <Plug>(GitGutterUndoHunk)
 nnoremap <leader>gq :GitGutterQuickFix<CR>
 
 " Keep visual selection when indenting

@@ -85,7 +85,10 @@ in
       zmodload zsh/complist
       mkdir -p "${config.xdg.cacheHome}/zsh"
       _zcompdump="${config.xdg.cacheHome}/zsh/.zcompdump-$ZSH_VERSION"
-      if [[ -s "$_zcompdump" ]]; then
+      # `compinit -C` skips the freshness check entirely, so a dump written once
+      # never picks up newly installed tools. Do the full scan when the dump is
+      # missing or older than a day, and take the fast path otherwise.
+      if [[ -n "$_zcompdump"(#qN.mh-24) ]]; then
         compinit -C -d "$_zcompdump"
       else
         compinit -d "$_zcompdump"
@@ -276,6 +279,7 @@ in
   # v1 .gitconfig — that path dies the moment brew's gh is cleaned up.
   programs.gh = {
     enable = true;
+    settings.aliases.co = "pr checkout";
     gitCredentialHelper = {
       enable = true;
       hosts = [
@@ -290,6 +294,13 @@ in
     enable = true;
     # No implicit defaults; the "*" block below is the whole config.
     enableDefaultConfig = false;
+    # Rendered as a single `Include` line ahead of every Host block, which is
+    # what OrbStack requires. Dropping these is what broke `ssh orb` and the
+    # Conductor hosts when this module first took over ~/.ssh/config.
+    includes = [
+      "conductor_config"
+      "~/.orbstack/ssh/config"
+    ];
     settings."*" = {
       AddKeysToAgent = "yes";
       IdentityFile = "~/.ssh/id_ed25519";

@@ -214,37 +214,41 @@
       # launch; if it is already running, quit and relaunch after a switch.
       "com.raycast.macos".raycastGlobalHotkey = "Command-49";
 
-      # Disable Spotlight's hotkeys so Raycast can take cmd+space; applies
-      # after logout/login. 64 = Show Spotlight search, 65 = Show Finder
-      # search window. WARNING: this replaces the entire AppleSymbolicHotKeys
-      # dict — any system shortcut customized outside nix reverts to its
-      # macOS default on switch.
-      "com.apple.symbolichotkeys".AppleSymbolicHotKeys = {
-        "64" = {
-          enabled = false;
-          value = {
-            type = "standard";
-            parameters = [ 32 49 1048576 ];
-          };
-        };
-        "65" = {
-          enabled = false;
-          value = {
-            type = "standard";
-            parameters = [ 32 49 1572864 ];
-          };
-        };
-      };
+      # Spotlight's cmd+space is disabled in postActivation below, not here:
+      # CustomUserPreferences writes a whole key at a time, so setting
+      # AppleSymbolicHotKeys from nix would replace the entire dict and revert
+      # every shortcut customized outside nix.
     };
   };
 
   ## Activation hooks ---------------------------------------------------------
-  # Accept the Xcode license after mas/homebrew have run (postActivation is
-  # the last activation fragment; on first bootstrap Xcode.app only exists
-  # after mas installs it). Runs as root, so no sudo needed. DEVELOPER_DIR is
-  # explicit because a fresh machine's xcode-select still points at the
-  # CommandLineTools, where bare `xcodebuild` errors out.
+  # postActivation is the last activation fragment, so mas/homebrew have
+  # already run by the time these do. Runs as root.
   system.activationScripts.postActivation.text = ''
+    # Raycast owns cmd+space. Disable only Spotlight's two search hotkeys,
+    # leaving each entry's `parameters` and every other shortcut untouched —
+    # `plutil -replace` sets a single leaf, unlike a `defaults write` of the
+    # whole AppleSymbolicHotKeys dict. The launchctl/sudo sandwich puts the
+    # write in the user's GUI session so cfprefsd sees it (same approach
+    # nix-darwin uses internally for user-scoped defaults), and
+    # `activateSettings -u` applies it without a logout/login.
+    hotkeys_uid=$(/usr/bin/id -u -- ${me.username})
+    hotkeys_plist="/Users/${me.username}/Library/Preferences/com.apple.symbolichotkeys.plist"
+    if [ -f "$hotkeys_plist" ]; then
+      for hotkey_id in 64 65; do # 64 = Spotlight search, 65 = Finder search window
+        /bin/launchctl asuser "$hotkeys_uid" /usr/bin/sudo --user=${me.username} -- \
+          /usr/bin/plutil -replace "AppleSymbolicHotKeys.$hotkey_id.enabled" -bool false \
+          "$hotkeys_plist" || echo "warning: could not disable hotkey $hotkey_id" >&2
+      done
+      /bin/launchctl asuser "$hotkeys_uid" /usr/bin/sudo --user=${me.username} -- \
+        /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u \
+        || true
+    fi
+
+    # Accept the Xcode license; on first bootstrap Xcode.app only exists after
+    # mas installs it. DEVELOPER_DIR is explicit because a fresh machine's
+    # xcode-select still points at the CommandLineTools, where bare
+    # `xcodebuild` errors out.
     if [ -d /Applications/Xcode.app ]; then
       if ! DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
           /usr/bin/xcodebuild -license check >/dev/null 2>&1; then

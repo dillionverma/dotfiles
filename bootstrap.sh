@@ -365,7 +365,7 @@ finish() {
   4. App Store apps only install while signed into the App Store (re-run 'drs' after signing in).
   5. Log out and back in: keyboard-repeat defaults and the cmd+space handoff apply at login.
 
-Daily driving: drs (rebuild + switch) · darwin-rebuild --list-generations · sudo darwin-rebuild switch --rollback
+Daily driving: drs (rebuild + switch) · sudo darwin-rebuild --list-generations · sudo darwin-rebuild switch --rollback
 Config lives in $DOTFILES_DIR
 EOM
 }
