@@ -12,7 +12,7 @@ One command applies the whole machine — packages, GUI apps, fonts, macOS defau
 | `flake.nix`          | Inputs (nixpkgs-unstable, nix-darwin, home-manager, nix-homebrew) and per-machine hosts via `mkDarwinHost` (`mac-mini`, `mbp`) |
 | `darwin.nix`         | System level: Homebrew casks + Mac App Store apps, fonts, macOS defaults, dock                                                 |
 | `home.nix`           | User level: CLI packages, zsh, git/gh/ssh, vim, app config files                                                               |
-| `config/`            | Non-Nix assets referenced from `home.nix`, one directory per app (bat, ghostty, ohmyposh, superset, vim, zed, zsh-patina)      |
+| `config/`            | Non-Nix assets referenced from `home.nix`, one directory per app (bat, ghostty, ohmyposh, vim, zed, zsh-patina)                |
 | `theme.nix`          | The Vesper palette, shared by anything themed from Nix (currently delta)                                                       |
 | `templates/devenv/`  | Per-project node + postgres + redis environment (`nix flake init -t <this repo>#devenv`)                                       |
 | `scripts/repo-clone` | Clone repos into a consistent `~/src` layout (installed onto PATH by `home.nix`)                                               |

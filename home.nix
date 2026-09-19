@@ -31,6 +31,10 @@ in
     fd
     ffmpeg
     jq
+    # pdftotext/pdftoppm. Declared because agent sessions reach for these to
+    # read PDFs and otherwise `brew install poppler` on every fresh machine,
+    # which the next switch then uninstalls again.
+    poppler-utils
     ripgrep
     wget
     yt-dlp
@@ -352,5 +356,4 @@ in
   xdg.configFile."zed/settings.json".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/zed/settings.json";
 
-  home.file.".superset/themes/vesper.json".source = ./config/superset/vesper.json;
 }
