@@ -43,12 +43,15 @@ main() {
   ask FLAKE_HOST "Flake host (must already exist in flake.nix)" \
     "$(printf '%s' "$LOCAL_HOST_NAME" | tr '[:upper:]' '[:lower:]')"
   case "$FLAKE_HOST" in
-    *[!a-zA-Z0-9_-]*|"") fail "flake host may only contain letters, digits, - and _" ;;
+    *[!a-zA-Z0-9_-]* | "") fail "flake host may only contain letters, digits, - and _" ;;
   esac
 
   step "Priming sudo (one password prompt for the whole run)"
   sudo -v
-  ( while kill -0 "$$" 2>/dev/null; do sudo -n true 2>/dev/null; sleep 50; done ) &
+  (while kill -0 "$$" 2>/dev/null; do
+    sudo -n true 2>/dev/null
+    sleep 50
+  done) &
   SUDO_KEEPALIVE_PID=$!
   trap 'kill "$SUDO_KEEPALIVE_PID" 2>/dev/null || true' EXIT
 
@@ -90,10 +93,13 @@ step() {
   step_n=$((step_n + 1))
   printf '\n%s[%d/%d] %s%s\n' "$bold" "$step_n" "$STEPS" "$1" "$reset"
 }
-log()  { printf '      %s\n' "$*"; }
+log() { printf '      %s\n' "$*"; }
 skip() { printf '      %s%s%s\n' "$dim" "$*" "$reset"; }
 warn() { printf '      %swarning:%s %s\n' "$yellow" "$reset" "$*" >&2; }
-fail() { printf '\n%serror:%s %s\n' "$red" "$reset" "$*" >&2; exit 1; }
+fail() {
+  printf '\n%serror:%s %s\n' "$red" "$reset" "$*" >&2
+  exit 1
+}
 
 # ask VAR "prompt" "default": read from the terminal, even under `curl | sh`
 # where stdin is the script itself. Honors NONINTERACTIVE and env presets.
@@ -122,11 +128,11 @@ ask() {
 confirm() {
   _yn=""
   ask _yn "$1 [Y/n]" "y"
-  case "$_yn" in y|Y|yes|YES|Yes) return 0 ;; *) return 1 ;; esac
+  case "$_yn" in y | Y | yes | YES | Yes) return 0 ;; *) return 1 ;; esac
 }
 
 # /dev/tty exists even with no controlling terminal (CI, ssh -T); test by opening it.
-has_tty() { ( exec </dev/tty ) 2>/dev/null; }
+has_tty() { (exec </dev/tty) 2>/dev/null; }
 
 # Some commands (gh auth login) need a real terminal on stdin.
 with_tty() {
@@ -143,7 +149,7 @@ preflight() {
     warn "sign in now in System Settings, or they will be skipped on this run and installed on the next drs."
   fi
   case "$DOTFILES_REPO" in
-    http://*|https://*|git@*|ssh://*) ;;
+    http://* | https://* | git@* | ssh://*) ;;
     github.com/*) DOTFILES_REPO="https://$DOTFILES_REPO" ;;
     */*) DOTFILES_REPO="https://github.com/$DOTFILES_REPO" ;;
     *) fail "DOTFILES_REPO must be owner/repo or a git URL (got '$DOTFILES_REPO')" ;;
@@ -160,9 +166,9 @@ install_clt() {
   # Make softwareupdate list the CLT package, then install it non-interactively.
   clt_flag=/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
   sudo touch "$clt_flag"
-  clt_label=$(softwareupdate -l 2>/dev/null \
-    | grep -o 'Label: Command Line Tools for Xcode-.*' \
-    | sed 's/^Label: //' | sort -V | tail -n1)
+  clt_label=$(softwareupdate -l 2>/dev/null |
+    grep -o 'Label: Command Line Tools for Xcode-.*' |
+    sed 's/^Label: //' | sort -V | tail -n1)
   if [ -n "$clt_label" ]; then
     sudo softwareupdate -i "$clt_label" --verbose
   else
@@ -175,8 +181,8 @@ install_clt() {
 }
 
 set_computer_name() {
-  if [ "$(scutil --get ComputerName 2>/dev/null)" = "$COMPUTER_NAME" ] \
-    && [ "$(scutil --get LocalHostName 2>/dev/null)" = "$LOCAL_HOST_NAME" ]; then
+  if [ "$(scutil --get ComputerName 2>/dev/null)" = "$COMPUTER_NAME" ] &&
+    [ "$(scutil --get LocalHostName 2>/dev/null)" = "$LOCAL_HOST_NAME" ]; then
     skip "already '$COMPUTER_NAME' ($LOCAL_HOST_NAME)"
     return
   fi
@@ -190,12 +196,12 @@ install_nix() {
   if command -v nix >/dev/null 2>&1; then
     skip "already installed ($(nix --version))"
   else
-    curl -fsSL https://install.determinate.systems/nix \
-      | sh -s -- install --determinate --no-confirm
+    curl -fsSL https://install.determinate.systems/nix |
+      sh -s -- install --determinate --no-confirm
   fi
   # shellcheck disable=SC1091
-  [ -r /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ] \
-    && . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+  [ -r /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ] &&
+    . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 }
 
 clone_dotfiles() {
@@ -235,8 +241,8 @@ first_switch() {
   # If Xcode is already present (a prior partial run), accept its license before
   # the switch — unaccepted licenses abort builds. First-install is handled by
   # postActivation in darwin.nix.
-  if [ -d /Applications/Xcode.app ] \
-    && ! DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
+  if [ -d /Applications/Xcode.app ] &&
+    ! DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
       /usr/bin/xcodebuild -license check >/dev/null 2>&1; then
     log "accepting the Xcode license"
     sudo DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
@@ -272,14 +278,14 @@ ensure_ssh_key() {
     ssh-keygen -q -t ed25519 -C "$(me_get email)" -f "$key" -N ""
     log "generated $key (no passphrase; the keychain guards it)"
   fi
-  ssh-add --apple-use-keychain "$key" 2>/dev/null \
-    || warn "ssh-add failed; run: ssh-add --apple-use-keychain $key"
+  ssh-add --apple-use-keychain "$key" 2>/dev/null ||
+    warn "ssh-add failed; run: ssh-add --apple-use-keychain $key"
 }
 
 ## Wrap-up -----------------------------------------------------------------
 
 finish() {
-  elapsed=$(( $(date +%s) - START ))
+  elapsed=$(($(date +%s) - START))
   printf '\n%s%sDone%s in %dm %02ds. What is left needs a human:\n\n' "$bold" "$green" "$reset" $((elapsed / 60)) $((elapsed % 60))
 
   # 1. GitHub: gh auth + register the ssh key (git over ssh needs it).
