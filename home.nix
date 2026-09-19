@@ -12,6 +12,9 @@ let
   # Canonical checkout of this repo. mkOutOfStoreSymlink and the drs alias
   # depend on this path — update it if the repo ever moves.
   dotfilesDir = "${config.home.homeDirectory}/src/personal/dotfiles";
+
+  # Shared Vesper colours; see theme.nix.
+  theme = import ./theme.nix;
 in
 {
   home.username = me.username;
@@ -246,24 +249,24 @@ in
       keep-plus-minus-markers = false;
       side-by-side = false;
       syntax-theme = "Vesper"; # from programs.bat.themes below (shared cache)
-      file-style = ''bold "#99ffe4"'';
-      file-decoration-style = ''"#1c1c1c" ul'';
-      hunk-header-style = ''file line-number bold "#b8a1ff"'';
-      hunk-header-decoration-style = ''"#1c1c1c"'';
-      hunk-header-file-style = ''"#99ffe4" bold'';
-      hunk-header-line-number-style = ''"#ffc799"'';
-      commit-style = ''"#ffc799" bold'';
-      commit-decoration-style = ''"#1c1c1c"'';
-      line-numbers-left-style = ''"#565f89"'';
-      line-numbers-right-style = ''"#565f89"'';
-      line-numbers-minus-style = ''"#ff8080"'';
-      line-numbers-plus-style = ''"#99ffe4"'';
-      line-numbers-zero-style = ''"#7d7d7d"'';
-      minus-style = ''syntax "#201313"'';
-      minus-emph-style = ''syntax "#3a1f1f"'';
-      plus-style = ''syntax "#13211d"'';
-      plus-emph-style = ''syntax "#1d332b"'';
-      zero-style = ''syntax "#151515"'';
+      file-style = ''bold "${theme.mint}"'';
+      file-decoration-style = ''"${theme.bgAlt}" ul'';
+      hunk-header-style = ''file line-number bold "${theme.purple}"'';
+      hunk-header-decoration-style = ''"${theme.bgAlt}"'';
+      hunk-header-file-style = ''"${theme.mint}" bold'';
+      hunk-header-line-number-style = ''"${theme.orange}"'';
+      commit-style = ''"${theme.orange}" bold'';
+      commit-decoration-style = ''"${theme.bgAlt}"'';
+      line-numbers-left-style = ''"${theme.diff.lineNumber}"'';
+      line-numbers-right-style = ''"${theme.diff.lineNumber}"'';
+      line-numbers-minus-style = ''"${theme.red}"'';
+      line-numbers-plus-style = ''"${theme.mint}"'';
+      line-numbers-zero-style = ''"${theme.comment}"'';
+      minus-style = ''syntax "${theme.diff.minusBg}"'';
+      minus-emph-style = ''syntax "${theme.diff.minusEmphBg}"'';
+      plus-style = ''syntax "${theme.diff.plusBg}"'';
+      plus-emph-style = ''syntax "${theme.diff.plusEmphBg}"'';
+      zero-style = ''syntax "${theme.diff.zeroBg}"'';
     };
   };
 
@@ -310,9 +313,9 @@ in
   programs.vim = {
     enable = true;
     plugins = [ pkgs.vimPlugins.vim-gitgutter ];
-    extraConfig = builtins.readFile ./config/vimrc;
+    extraConfig = builtins.readFile ./config/vim/vimrc;
   };
-  home.file.".vim/colors/vesper.vim".source = ./config/vesper.vim;
+  home.file.".vim/colors/vesper.vim".source = ./config/vim/vesper.vim;
 
   ## Terminal & app config files ---------------------------------------------
   programs.bat = {
