@@ -1,6 +1,12 @@
 # User-level configuration (home-manager, wired in via darwin.nix).
 # hostName comes from the flake attr name and me from me.nix (via extraSpecialArgs).
-{ pkgs, config, hostName, me, ... }:
+{
+  pkgs,
+  config,
+  hostName,
+  me,
+  ...
+}:
 
 let
   # Canonical checkout of this repo. mkOutOfStoreSymlink and the drs alias
@@ -31,6 +37,7 @@ in
     cloudflared
     devenv
     infisical
+    just
     python3
     shellcheck
     uv
@@ -140,7 +147,7 @@ in
       pt = "pnpm test";
       px = "pnpm exec";
       reload = "source ~/.zshrc";
-      drs = "sudo darwin-rebuild switch --flake ${dotfilesDir}#${hostName}";
+      drs = "just --justfile ${dotfilesDir}/justfile --working-directory ${dotfilesDir} host=${hostName} switch";
     };
 
     initContent = ''
