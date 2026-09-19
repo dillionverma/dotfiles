@@ -31,7 +31,6 @@ in
     cloudflared
     devenv
     infisical
-    pulumi-bin
     python3
     shellcheck
     uv
@@ -181,20 +180,6 @@ in
         dir="$(repo-clone "$@")" || return
         cd "$dir" || return
       }
-
-      if command -v infisical >/dev/null 2>&1; then
-        # Skip cleanly when this machine or shell has not been linked to an
-        # Infisical project.
-        infisical_npm_token_export="$(
-          infisical export --env=dev --path=/ --format=dotenv --silent 2>/dev/null \
-            | grep '^NPM_TOKEN_GOOGLE_SIGN_IN=' \
-            | sed 's/^/export /'
-        )"
-        if [[ -n "$infisical_npm_token_export" ]]; then
-          eval "$infisical_npm_token_export"
-        fi
-        unset infisical_npm_token_export
-      fi
 
       if [[ -r "$HOME/.zshrc.local" ]]; then
         source "$HOME/.zshrc.local"
