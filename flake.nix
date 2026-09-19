@@ -14,29 +14,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-homebrew = {
-      url = "github:zhaofengli/nix-homebrew";
-      # Pin brew itself here rather than inheriting nix-homebrew's own (older)
-      # pin. The brew executable and homebrew-core evolve in lockstep: formulae
-      # adopt new DSL keywords as soon as brew ships them, so a tap newer than
-      # brew fails to parse. Bump brew-src and homebrew-core TOGETHER.
-      inputs.brew-src.follows = "brew-src";
-    };
-
-    brew-src = {
-      url = "github:Homebrew/brew";
-      flake = false;
-    };
-
-    # Immutable, declarative Homebrew taps (consumed in darwin.nix).
-    homebrew-core = {
-      url = "github:homebrew/homebrew-core";
-      flake = false;
-    };
-    homebrew-cask = {
-      url = "github:homebrew/homebrew-cask";
-      flake = false;
-    };
+    # Deliberately does NOT pin homebrew-core/homebrew-cask. nix-homebrew sets
+    # HOMEBREW_NO_INSTALL_FROM_API=1 whenever homebrew-core is a pinned tap,
+    # which forces brew off its JSON API and onto the full git-tap code path —
+    # two enormous checkouts to clone and update. Unpinned, brew resolves
+    # formulae and casks over the API. mutableTaps = false still holds in
+    # darwin.nix, so ad-hoc `brew tap` stays disabled and the only tap on disk
+    # is the in-repo one. brew itself comes from nix-homebrew's own pin.
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
   };
 
   outputs =

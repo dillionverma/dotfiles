@@ -55,11 +55,11 @@
     user = me.username;
     # Adopt the existing /opt/homebrew installation on first switch.
     autoMigrate = true;
-    # Taps are read-only flake inputs; ad-hoc `brew tap` is disabled by design.
+    # Ad-hoc `brew tap` is disabled by design; the taps below are the only
+    # ones on disk. homebrew-core/homebrew-cask are deliberately absent — see
+    # the comment on nix-homebrew in flake.nix.
     mutableTaps = false;
     taps = {
-      "homebrew/homebrew-core" = inputs.homebrew-core;
-      "homebrew/homebrew-cask" = inputs.homebrew-cask;
       # In-repo tap for apps with no upstream cask (casks live in taps/).
       # builtins.path because nix-homebrew wants a package, not a bare path.
       "dillionverma/homebrew-tap" = builtins.path {
@@ -77,8 +77,12 @@
 
     onActivation = {
       autoUpdate = false;
-      # Without this a tap bump leaves installed casks stale.
-      upgrade = true;
+      # Off (nix-darwin's default): with it on, every switch turns into a
+      # network-bound, non-deterministic cask upgrade. The old justification
+      # was that a tap bump otherwise left casks stale, which no longer
+      # applies now that casks resolve over brew's API. Use `just brew-upgrade`
+      # when you actually want it.
+      upgrade = false;
       # Anything not declared here gets uninstalled on switch.
       cleanup = "uninstall";
     };
