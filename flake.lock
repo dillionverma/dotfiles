@@ -3,15 +3,16 @@
     "brew-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1789497452,
-        "narHash": "sha256-+Sf+1aqCvpu8ScKWQmIJrWK9jLYNc8OtIWl3Mtk7F3A=",
+        "lastModified": 1788591592,
+        "narHash": "sha256-NbwVKwKLFl0oXub7oPjvmDaOygCtV2oboeKTu4xXFTk=",
         "owner": "Homebrew",
         "repo": "brew",
-        "rev": "e05da900e7941de8104d38642c35ae3ab2bd5231",
+        "rev": "08e85c4e42f5d8f1ea17c36cb59cf61c2ccb26c3",
         "type": "github"
       },
       "original": {
         "owner": "Homebrew",
+        "ref": "6.0.22",
         "repo": "brew",
         "type": "github"
       }
@@ -33,38 +34,6 @@
       "original": {
         "owner": "nix-community",
         "repo": "home-manager",
-        "type": "github"
-      }
-    },
-    "homebrew-cask": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1789494476,
-        "narHash": "sha256-YKJrhGA/TVxAJKFN1qW1TvuczZLIpdBelMkcfvsHbco=",
-        "owner": "homebrew",
-        "repo": "homebrew-cask",
-        "rev": "dac653c82baff7bd0ecfd2b5662b2c5fe8b91678",
-        "type": "github"
-      },
-      "original": {
-        "owner": "homebrew",
-        "repo": "homebrew-cask",
-        "type": "github"
-      }
-    },
-    "homebrew-core": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1789497860,
-        "narHash": "sha256-cUqDwpAaOqVaJCMc3GUwSeelMi2A0XFUifHelIeqqPE=",
-        "owner": "homebrew",
-        "repo": "homebrew-core",
-        "rev": "b7a6a7882f3fd89e60d23126fb6860d36baf96ab",
-        "type": "github"
-      },
-      "original": {
-        "owner": "homebrew",
-        "repo": "homebrew-core",
         "type": "github"
       }
     },
@@ -91,9 +60,7 @@
     },
     "nix-homebrew": {
       "inputs": {
-        "brew-src": [
-          "brew-src"
-        ]
+        "brew-src": "brew-src"
       },
       "locked": {
         "lastModified": 1788981439,
@@ -127,10 +94,7 @@
     },
     "root": {
       "inputs": {
-        "brew-src": "brew-src",
         "home-manager": "home-manager",
-        "homebrew-cask": "homebrew-cask",
-        "homebrew-core": "homebrew-core",
         "nix-darwin": "nix-darwin",
         "nix-homebrew": "nix-homebrew",
         "nixpkgs": "nixpkgs"

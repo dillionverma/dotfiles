@@ -1,0 +1,5 @@
+# Mechanical reformats. Ignore with:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# style: apply the first nix fmt pass
+1dea0338dab11e1394b2d25fe3da59830fc90740

@@ -1,11 +1,20 @@
 # User-level configuration (home-manager, wired in via darwin.nix).
 # hostName comes from the flake attr name and me from me.nix (via extraSpecialArgs).
-{ pkgs, config, hostName, me, ... }:
+{
+  pkgs,
+  config,
+  hostName,
+  me,
+  ...
+}:
 
 let
   # Canonical checkout of this repo. mkOutOfStoreSymlink and the drs alias
   # depend on this path — update it if the repo ever moves.
   dotfilesDir = "${config.home.homeDirectory}/src/personal/dotfiles";
+
+  # Shared Vesper colours; see theme.nix.
+  theme = import ./theme.nix;
 in
 {
   home.username = me.username;
@@ -22,6 +31,10 @@ in
     fd
     ffmpeg
     jq
+    # pdftotext/pdftoppm. Declared because agent sessions reach for these to
+    # read PDFs and otherwise `brew install poppler` on every fresh machine,
+    # which the next switch then uninstalls again.
+    poppler-utils
     ripgrep
     wget
     yt-dlp
@@ -31,7 +44,7 @@ in
     cloudflared
     devenv
     infisical
-    pulumi-bin
+    just
     python3
     shellcheck
     uv
@@ -85,7 +98,10 @@ in
       zmodload zsh/complist
       mkdir -p "${config.xdg.cacheHome}/zsh"
       _zcompdump="${config.xdg.cacheHome}/zsh/.zcompdump-$ZSH_VERSION"
-      if [[ -s "$_zcompdump" ]]; then
+      # `compinit -C` skips the freshness check entirely, so a dump written once
+      # never picks up newly installed tools. Do the full scan when the dump is
+      # missing or older than a day, and take the fast path otherwise.
+      if [[ -n "$_zcompdump"(#qN.mh-24) ]]; then
         compinit -C -d "$_zcompdump"
       else
         compinit -d "$_zcompdump"
@@ -138,7 +154,7 @@ in
       pt = "pnpm test";
       px = "pnpm exec";
       reload = "source ~/.zshrc";
-      drs = "sudo darwin-rebuild switch --flake ${dotfilesDir}#${hostName}";
+      drs = "just --justfile ${dotfilesDir}/justfile --working-directory ${dotfilesDir} host=${hostName} switch";
     };
 
     initContent = ''
@@ -178,20 +194,6 @@ in
         dir="$(repo-clone "$@")" || return
         cd "$dir" || return
       }
-
-      if command -v infisical >/dev/null 2>&1; then
-        # Skip cleanly when this machine or shell has not been linked to an
-        # Infisical project.
-        infisical_npm_token_export="$(
-          infisical export --env=dev --path=/ --format=dotenv --silent 2>/dev/null \
-            | grep '^NPM_TOKEN_GOOGLE_SIGN_IN=' \
-            | sed 's/^/export /'
-        )"
-        if [[ -n "$infisical_npm_token_export" ]]; then
-          eval "$infisical_npm_token_export"
-        fi
-        unset infisical_npm_token_export
-      fi
 
       if [[ -r "$HOME/.zshrc.local" ]]; then
         source "$HOME/.zshrc.local"
@@ -251,24 +253,24 @@ in
       keep-plus-minus-markers = false;
       side-by-side = false;
       syntax-theme = "Vesper"; # from programs.bat.themes below (shared cache)
-      file-style = ''bold "#99ffe4"'';
-      file-decoration-style = ''"#1c1c1c" ul'';
-      hunk-header-style = ''file line-number bold "#b8a1ff"'';
-      hunk-header-decoration-style = ''"#1c1c1c"'';
-      hunk-header-file-style = ''"#99ffe4" bold'';
-      hunk-header-line-number-style = ''"#ffc799"'';
-      commit-style = ''"#ffc799" bold'';
-      commit-decoration-style = ''"#1c1c1c"'';
-      line-numbers-left-style = ''"#565f89"'';
-      line-numbers-right-style = ''"#565f89"'';
-      line-numbers-minus-style = ''"#ff8080"'';
-      line-numbers-plus-style = ''"#99ffe4"'';
-      line-numbers-zero-style = ''"#7d7d7d"'';
-      minus-style = ''syntax "#201313"'';
-      minus-emph-style = ''syntax "#3a1f1f"'';
-      plus-style = ''syntax "#13211d"'';
-      plus-emph-style = ''syntax "#1d332b"'';
-      zero-style = ''syntax "#151515"'';
+      file-style = ''bold "${theme.mint}"'';
+      file-decoration-style = ''"${theme.bgAlt}" ul'';
+      hunk-header-style = ''file line-number bold "${theme.purple}"'';
+      hunk-header-decoration-style = ''"${theme.bgAlt}"'';
+      hunk-header-file-style = ''"${theme.mint}" bold'';
+      hunk-header-line-number-style = ''"${theme.orange}"'';
+      commit-style = ''"${theme.orange}" bold'';
+      commit-decoration-style = ''"${theme.bgAlt}"'';
+      line-numbers-left-style = ''"${theme.diff.lineNumber}"'';
+      line-numbers-right-style = ''"${theme.diff.lineNumber}"'';
+      line-numbers-minus-style = ''"${theme.red}"'';
+      line-numbers-plus-style = ''"${theme.mint}"'';
+      line-numbers-zero-style = ''"${theme.comment}"'';
+      minus-style = ''syntax "${theme.diff.minusBg}"'';
+      minus-emph-style = ''syntax "${theme.diff.minusEmphBg}"'';
+      plus-style = ''syntax "${theme.diff.plusBg}"'';
+      plus-emph-style = ''syntax "${theme.diff.plusEmphBg}"'';
+      zero-style = ''syntax "${theme.diff.zeroBg}"'';
     };
   };
 
@@ -276,6 +278,7 @@ in
   # v1 .gitconfig — that path dies the moment brew's gh is cleaned up.
   programs.gh = {
     enable = true;
+    settings.aliases.co = "pr checkout";
     gitCredentialHelper = {
       enable = true;
       hosts = [
@@ -290,6 +293,13 @@ in
     enable = true;
     # No implicit defaults; the "*" block below is the whole config.
     enableDefaultConfig = false;
+    # Rendered as a single `Include` line ahead of every Host block, which is
+    # what OrbStack requires. Dropping these is what broke `ssh orb` and the
+    # Conductor hosts when this module first took over ~/.ssh/config.
+    includes = [
+      "conductor_config"
+      "~/.orbstack/ssh/config"
+    ];
     settings."*" = {
       AddKeysToAgent = "yes";
       IdentityFile = "~/.ssh/id_ed25519";
@@ -307,9 +317,9 @@ in
   programs.vim = {
     enable = true;
     plugins = [ pkgs.vimPlugins.vim-gitgutter ];
-    extraConfig = builtins.readFile ./config/vimrc;
+    extraConfig = builtins.readFile ./config/vim/vimrc;
   };
-  home.file.".vim/colors/vesper.vim".source = ./config/vesper.vim;
+  home.file.".vim/colors/vesper.vim".source = ./config/vim/vesper.vim;
 
   ## Terminal & app config files ---------------------------------------------
   programs.bat = {
@@ -346,5 +356,4 @@ in
   xdg.configFile."zed/settings.json".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/zed/settings.json";
 
-  home.file.".superset/themes/vesper.json".source = ./config/superset/vesper.json;
 }
