@@ -10,7 +10,8 @@
 #
 # Env overrides (all optional; prompted for when interactive):
 #   COMPUTER_NAME   name shown in Finder/Sharing (default: current name)
-#   FLAKE_HOST      darwinConfigurations attr to build (default: LocalHostName)
+#   FLAKE_HOST      darwinConfigurations attr to build; must already exist in
+#                   flake.nix (default: LocalHostName, lowercased)
 #   DOTFILES_REPO   owner/repo or URL (default: dillionverma/dotfiles)
 #   DOTFILES_DIR    checkout path (default: ~/src/personal/dotfiles)
 #   NONINTERACTIVE  set to 1 to take every default without asking
@@ -26,7 +27,7 @@ main() {
   DOTFILES_REPO="${DOTFILES_REPO:-dillionverma/dotfiles}"
   FLAKE_HOST="${FLAKE_HOST:-}"
   COMPUTER_NAME="${COMPUTER_NAME:-}"
-  STEPS=8
+  STEPS=7
   START=$(date +%s)
   USER="${USER:-$(id -un)}"
 
@@ -39,7 +40,7 @@ main() {
   # LocalHostName (Bonjour) allows only letters, digits, and hyphens.
   LOCAL_HOST_NAME=$(printf '%s' "$COMPUTER_NAME" | tr ' _' '--' | tr -cd 'a-zA-Z0-9-')
   [ -n "$LOCAL_HOST_NAME" ] || fail "computer name must contain a letter or digit"
-  ask FLAKE_HOST "Flake host (darwinConfigurations attr; added to flake.nix if new)" \
+  ask FLAKE_HOST "Flake host (must already exist in flake.nix)" \
     "$(printf '%s' "$LOCAL_HOST_NAME" | tr '[:upper:]' '[:lower:]')"
   case "$FLAKE_HOST" in
     *[!a-zA-Z0-9_-]*|"") fail "flake host may only contain letters, digits, - and _" ;;
@@ -62,17 +63,13 @@ main() {
 
   step "Dotfiles checkout"
   clone_dotfiles
-  ensure_host_in_flake
-  ensure_identity
+  require_host_in_flake
 
   step "darwin-rebuild switch (first run installs Homebrew, apps, fonts, defaults)"
   first_switch
 
   step "SSH key"
   ensure_ssh_key
-
-  step "Toolchains"
-  ensure_rustup
 
   finish
 }
@@ -211,53 +208,27 @@ clone_dotfiles() {
   log "cloned to $DOTFILES_DIR"
 }
 
-# me.nix accessors (plain sed; nix may not be on PATH yet in this shell).
+# me.nix reader (plain sed; nix may not be on PATH yet in this shell).
+# Read-only on purpose: this script does not edit tracked files.
 me_get() { sed -n "s/^  $1 = \"\(.*\)\";/\1/p" "$DOTFILES_DIR/me.nix"; }
-me_set() { sed -i '' "s|^  $1 = \".*\";|  $1 = \"$2\";|" "$DOTFILES_DIR/me.nix"; }
 
-# git commit that works before user.name/email are configured on this machine.
-repo_commit() {
-  git -C "$DOTFILES_DIR" \
-    -c "user.name=$(me_get fullName)" -c "user.email=$(me_get email)" \
-    commit --quiet -m "$1"
-}
-
-ensure_host_in_flake() {
+# A machine's LocalHostName often does not match any flake attr (this repo has
+# seen an "mbp-2" report itself while flake.nix only defined "mbp"). Editing and
+# committing flake.nix from here silently added phantom hosts, so: refuse, and
+# say exactly what to add.
+require_host_in_flake() {
   flake="$DOTFILES_DIR/flake.nix"
   hosts=$(grep -o 'mkDarwinHost "[^"]*"' "$flake" | cut -d'"' -f2 | tr '\n' ' ')
   if grep -q "mkDarwinHost \"$FLAKE_HOST\"" "$flake"; then
     skip "host '$FLAKE_HOST' (available: ${hosts% })"
     return
   fi
-  # Insert right after the `darwinConfigurations = {` line.
-  perl -0pi -e 's/(darwinConfigurations = \{\n)/$1        "'"$FLAKE_HOST"'" = mkDarwinHost "'"$FLAKE_HOST"'";\n/' "$flake"
-  grep -q "mkDarwinHost \"$FLAKE_HOST\"" "$flake" \
-    || fail "could not add host '$FLAKE_HOST' to flake.nix; add it by hand next to the other mkDarwinHost lines."
-  git -C "$DOTFILES_DIR" add flake.nix
-  repo_commit "feat(hosts): add $FLAKE_HOST"
-  log "added host '$FLAKE_HOST' to flake.nix (committed locally; push when ready)"
-}
-
-# me.nix holds username/name/email. If this machine's user is someone else
-# (a fork, or a different macOS username), ask and rewrite it.
-ensure_identity() {
-  me_user=$(me_get username)
-  if [ "$me_user" = "$USER" ]; then
-    skip "identity: $(me_get fullName) <$(me_get email)> as $me_user"
-    return
-  fi
-  log "me.nix is for '$me_user' but you are '$USER' — personalizing"
-  FULL_NAME="${FULL_NAME:-}" EMAIL="${EMAIL:-}" GITHUB_USER="${GITHUB_USER:-}"
-  ask FULL_NAME "Full name (git user.name)" "$(id -F 2>/dev/null || echo "$USER")"
-  ask EMAIL "Email (git user.email, ssh key comment)" "$USER@$(hostname -s).local"
-  ask GITHUB_USER "GitHub username" "$USER"
-  me_set username "$USER"
-  me_set fullName "$FULL_NAME"
-  me_set email "$EMAIL"
-  me_set github "$GITHUB_USER"
-  git -C "$DOTFILES_DIR" add me.nix
-  repo_commit "chore(me): personalize for $USER"
-  log "me.nix updated and committed locally"
+  printf '\n%serror:%s host '"'"'%s'"'"' is not defined in flake.nix (have: %s)\n' \
+    "$red" "$reset" "$FLAKE_HOST" "${hosts% }" >&2
+  printf '  add this line next to the others in darwinConfigurations, then re-run:\n\n' >&2
+  printf '      %s = mkDarwinHost "%s";\n\n' "$FLAKE_HOST" "$FLAKE_HOST" >&2
+  printf '  or re-run with an existing host:  FLAKE_HOST=%s sh\n' "${hosts%% *}" >&2
+  exit 1
 }
 
 first_switch() {
@@ -303,17 +274,6 @@ ensure_ssh_key() {
   fi
   ssh-add --apple-use-keychain "$key" 2>/dev/null \
     || warn "ssh-add failed; run: ssh-add --apple-use-keychain $key"
-}
-
-ensure_rustup() {
-  if ! command -v rustup >/dev/null 2>&1; then
-    skip "rustup not on PATH; skipping"
-  elif rustup show active-toolchain >/dev/null 2>&1; then
-    skip "rustup: $(rustup show active-toolchain 2>/dev/null | cut -d' ' -f1)"
-  else
-    rustup default stable
-    log "rustup default toolchain set to stable"
-  fi
 }
 
 ## Wrap-up -----------------------------------------------------------------
@@ -364,6 +324,7 @@ finish() {
   3. Sign into apps: Tailscale, Bitwarden, Slack, 1Password, ... and run: infisical login
   4. App Store apps only install while signed into the App Store (re-run 'drs' after signing in).
   5. Log out and back in: keyboard-repeat defaults and the cmd+space handoff apply at login.
+  6. Rust, if you want it: rustup default stable
 
 Daily driving: drs (rebuild + switch) · sudo darwin-rebuild --list-generations · sudo darwin-rebuild switch --rollback
 Config lives in $DOTFILES_DIR
