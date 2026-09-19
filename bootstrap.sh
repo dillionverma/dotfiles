@@ -16,7 +16,7 @@
 #   DOTFILES_DIR    checkout path (default: ~/src/personal/dotfiles)
 #   NONINTERACTIVE  set to 1 to take every default without asking
 #
-# Full runbook: docs/bootstrap.md
+# Full runbook: README.md
 
 set -eu
 # shellcheck disable=SC3040 # pipefail is not POSIX; macOS /bin/sh (bash, zsh) has it.
