@@ -14,11 +14,10 @@ One command applies the whole machine — packages, GUI apps, fonts, macOS defau
 | `home.nix`           | User level: CLI packages, zsh, git/gh/ssh, vim, app config files                                                               |
 | `config/`            | Non-Nix assets referenced from `home.nix`, one directory per app (bat, ghostty, ohmyposh, vim, zed, zsh-patina)                |
 | `theme.nix`          | The Vesper palette, shared by anything themed from Nix (currently delta)                                                       |
-| `templates/devenv/`  | Per-project node + postgres + redis environment (`nix flake init -t <this repo>#devenv`)                                       |
 | `scripts/repo-clone` | Clone repos into a consistent `~/src` layout (installed onto PATH by `home.nix`)                                               |
 | `justfile`           | Task runner: `switch`, `build`, `check`, `fmt`, `update`, `gc`, `rollback`                                                     |
 
-Design notes: CLI tools come from nixpkgs; GUI apps stay Homebrew casks (self-update, Spotlight, dock icons). `brew tap` is disabled on purpose — `mutableTaps = false` means the only tap on disk is the in-repo one under `taps/`, and everything else resolves over Homebrew's API. There are no global services; databases run per-project via [devenv](https://devenv.sh).
+Design notes: CLI tools come from nixpkgs; GUI apps stay Homebrew casks (self-update, Spotlight, dock icons). `brew tap` is disabled on purpose — `mutableTaps = false` and no taps are declared, so formulae and casks resolve over Homebrew's JSON API. There are no global services; databases run per-project via [devenv](https://devenv.sh).
 
 ## New machine
 
@@ -102,12 +101,3 @@ just brew-upgrade    # casks are deliberately not upgraded during activation
 **Nothing else garbage-collects.** Determinate Nix ships no GC timer, and `nix.enable = false` means nix-darwin contributes none — `just gc` is the only thing that reclaims the store.
 
 Edit `darwin.nix` / `home.nix` / `config/*`, then `just switch`. Zed settings are symlinked out-of-store, so the Zed UI writes straight into this repo.
-
-New project with node + postgres + redis:
-
-```bash
-mkdir myapp && cd myapp
-nix flake init -t ~/src/personal/dotfiles#devenv
-direnv allow           # loads the shell on cd
-devenv up              # starts postgres + redis, state in .devenv/state/
-```

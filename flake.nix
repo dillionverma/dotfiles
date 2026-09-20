@@ -95,11 +95,5 @@
       checks.${system} = lib.mapAttrs' (
         name: cfg: lib.nameValuePair "darwin-${name}" cfg.config.system.build.toplevel
       ) self.darwinConfigurations;
-
-      # Scaffold a project: nix flake init -t ~/src/personal/dotfiles#devenv
-      templates.devenv = {
-        path = ./templates/devenv;
-        description = "Project devshell: node + pnpm + postgres + redis (devenv)";
-      };
     };
 }

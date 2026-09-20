@@ -63,18 +63,10 @@
     user = me.username;
     # Adopt the existing /opt/homebrew installation on first switch.
     autoMigrate = true;
-    # Ad-hoc `brew tap` is disabled by design; the taps below are the only
-    # ones on disk. homebrew-core/homebrew-cask are deliberately absent — see
-    # the comment on nix-homebrew in flake.nix.
+    # No taps at all: ad-hoc `brew tap` is disabled, and formulae and casks
+    # resolve over brew's JSON API. See the nix-homebrew comment in flake.nix.
     mutableTaps = false;
-    taps = {
-      # In-repo tap for apps with no upstream cask (casks live in taps/).
-      # builtins.path because nix-homebrew wants a package, not a bare path.
-      "dillionverma/homebrew-tap" = builtins.path {
-        path = ./taps/dillionverma;
-        name = "dillionverma-homebrew-tap";
-      };
-    };
+    taps = { };
   };
 
   homebrew = {
@@ -127,8 +119,6 @@
       "codex-app"
       "conductor"
       "cursor-cli"
-      # From the in-repo tap (taps/dillionverma); no upstream cask exists.
-      "dillionverma/tap/db-pro"
       "discord"
       "ente-auth"
       "figma"

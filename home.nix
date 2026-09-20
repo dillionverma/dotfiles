@@ -50,7 +50,7 @@ in
     uv
 
     # javascript: global baseline for one-off scripts; projects pin their own
-    # versions via devenv/devshells (see templates/devenv)
+    # versions via devenv/devshells
     bun
     nodejs_24
     pnpm
