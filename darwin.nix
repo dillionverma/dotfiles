@@ -140,7 +140,6 @@
       "rustdesk"
       "slack"
       "spotify"
-      "t3-code@nightly" # self-updates to each nightly build
       # Menu bar manager; maintained Ice fork, needs macOS 26+. Replaced hiddenbar.
       "thaw"
       "thunderbird"
