@@ -51,6 +51,7 @@ update:
 
 # Activation deliberately does not upgrade casks; do it on purpose instead.
 brew-upgrade:
+    brew update
     brew upgrade
     brew upgrade --cask --greedy
 

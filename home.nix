@@ -179,6 +179,15 @@ in
       bindkey '^[[F' end-of-line
       # ^R is fzf's history widget (programs.fzf, sourced above); do not rebind.
 
+      # nix-homebrew disables brew's auto-update; refresh the package list
+      # before commands that compare versions. See the note in darwin.nix.
+      brew() {
+        case "$1" in
+          install | upgrade | outdated) command brew update --quiet || return ;;
+        esac
+        command brew "$@"
+      }
+
       take() {
         mkdir -p "$1" && cd "$1"
       }

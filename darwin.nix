@@ -69,6 +69,33 @@
     taps = { };
   };
 
+  # nix-homebrew sets HOMEBREW_NO_AUTO_UPDATE=1 (it assumes pinned taps), so
+  # brew never refreshes its local copy of the JSON API and `brew upgrade`
+  # reports stale versions as the latest. Do not re-enable auto-update via
+  # nix-homebrew.extraEnv: brew re-execs itself after the refresh and loses
+  # the caller's PATH, so `brew bundle` in activation cannot find mas. Instead,
+  # this agent and the zsh `brew` wrapper (home.nix) run `brew update` first.
+  #
+  # Daily unattended upgrade, so CLI casks such as codex stay current without
+  # a manual `just brew-upgrade`. Not --greedy: casks that self-update (most
+  # GUI apps) are left alone. Casks whose installer needs sudo fail here and
+  # still need `just brew-upgrade`. Log: ~/Library/Logs/brew-upgrade.log.
+  launchd.user.agents.brew-upgrade.serviceConfig = {
+    ProgramArguments = [
+      "/bin/sh"
+      "-c"
+      "/opt/homebrew/bin/brew update && /opt/homebrew/bin/brew upgrade; /opt/homebrew/bin/brew upgrade --cask"
+    ];
+    StartCalendarInterval = [
+      {
+        Hour = 10;
+        Minute = 0;
+      }
+    ];
+    StandardOutPath = "/Users/${me.username}/Library/Logs/brew-upgrade.log";
+    StandardErrorPath = "/Users/${me.username}/Library/Logs/brew-upgrade.log";
+  };
+
   homebrew = {
     enable = true;
     # Must mirror nix-homebrew.taps exactly, or activation tries to modify
@@ -80,8 +107,8 @@
       # Off (nix-darwin's default): with it on, every switch turns into a
       # network-bound, non-deterministic cask upgrade. The old justification
       # was that a tap bump otherwise left casks stale, which no longer
-      # applies now that casks resolve over brew's API. Use `just brew-upgrade`
-      # when you actually want it.
+      # applies now that casks resolve over brew's API. The brew-upgrade
+      # launchd agent above upgrades daily; `just brew-upgrade` adds --greedy.
       upgrade = false;
       # Anything not declared here gets uninstalled on switch.
       cleanup = "uninstall";
