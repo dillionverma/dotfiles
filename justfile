@@ -24,8 +24,12 @@ _require-host:
       exit 1
     fi
 
-# Rebuild and activate this machine.
-switch: _require-host
+# Fast-forward to origin. Refuses (instead of merging) if local and remote diverged.
+pull:
+    git pull --ff-only
+
+# Pull, then rebuild and activate this machine.
+switch: _require-host pull
     sudo darwin-rebuild switch --flake .#{{ host }}
 
 # Build without activating, then show what would change.
