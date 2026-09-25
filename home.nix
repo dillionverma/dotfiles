@@ -46,6 +46,9 @@ in
     infisical
     just
     python3
+    # Claude Code PreToolUse hook (`rtk hook claude` in ~/.claude/settings.json)
+    # rewrites Bash calls through rtk to condense command output for agents.
+    rtk
     shellcheck
     uv
 
