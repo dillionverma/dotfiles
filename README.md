@@ -33,7 +33,7 @@ Run from the repo root; `just` finds the justfile there.
 | `config/<app>/` | Non-Nix assets                                             |
 | `theme.nix`     | Vesper palette                                             |
 
-CLI tools come from nixpkgs; GUI apps stay Homebrew casks, resolved over brew's JSON API with no taps declared.
+CLI tools come from nixpkgs; GUI apps stay Homebrew casks, resolved over brew's JSON API, with third-party taps allowed. Sleepless uses `aboudjem/tap`.
 
 ## Forking
 

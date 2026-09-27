@@ -18,9 +18,8 @@
     # HOMEBREW_NO_INSTALL_FROM_API=1 whenever homebrew-core is a pinned tap,
     # which forces brew off its JSON API and onto the full git-tap code path —
     # two enormous checkouts to clone and update. Unpinned, brew resolves
-    # formulae and casks over the API. mutableTaps = false still holds in
-    # darwin.nix, so ad-hoc `brew tap` stays disabled and the only tap on disk
-    # is the in-repo one. brew itself comes from nix-homebrew's own pin.
+    # formulae and casks over the API. Mutable taps in darwin.nix allow
+    # third-party repositories. brew itself comes from nix-homebrew's own pin.
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
   };
 

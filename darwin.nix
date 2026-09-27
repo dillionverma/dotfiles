@@ -51,10 +51,9 @@
   };
 
   ## Homebrew ----------------------------------------------------------------
-  # nix-homebrew pins the Homebrew installation itself and makes taps
-  # immutable flake inputs; the homebrew module below declares what is
-  # installed. GUI apps stay casks on purpose: self-update, Spotlight
-  # indexing, and the dock question-mark bug (nix-darwin#1250) all favor
+  # nix-homebrew pins the Homebrew installation itself; taps can also be
+  # added with brew. The homebrew module below declares what is installed.
+  # GUI apps stay casks on purpose: self-update, Spotlight indexing, and the dock question-mark bug (nix-darwin#1250) all favor
   # /Applications over the nix store.
 
   nix-homebrew = {
@@ -63,9 +62,8 @@
     user = me.username;
     # Adopt the existing /opt/homebrew installation on first switch.
     autoMigrate = true;
-    # No taps at all: ad-hoc `brew tap` is disabled, and formulae and casks
-    # resolve over brew's JSON API. See the nix-homebrew comment in flake.nix.
-    mutableTaps = false;
+    # Allow third-party taps while core formulae and casks use brew's JSON API.
+    mutableTaps = true;
     taps = { };
   };
 
@@ -98,9 +96,8 @@
 
   homebrew = {
     enable = true;
-    # Must mirror nix-homebrew.taps exactly, or activation tries to modify
-    # the read-only tap checkouts and fails.
-    taps = builtins.attrNames config.nix-homebrew.taps;
+    # Include pinned taps and third-party taps needed by declared casks.
+    taps = builtins.attrNames config.nix-homebrew.taps ++ [ "aboudjem/tap" ];
 
     onActivation = {
       autoUpdate = false;
@@ -166,6 +163,7 @@
       "rectangle"
       "rustdesk"
       "slack"
+      "aboudjem/tap/sleepless"
       "spotify"
       # Menu bar manager; maintained Ice fork, needs macOS 26+. Replaced hiddenbar.
       "thaw"
