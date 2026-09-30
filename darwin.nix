@@ -266,6 +266,10 @@
         || true
     fi
 
+    /bin/launchctl asuser "$hotkeys_uid" /usr/bin/sudo --user=${me.username} --set-home -- \
+      ${pkgs.python3}/bin/python3 ${./scripts/restore-menu-bar.py} ${./config/menu-bar.json} \
+      || exit 1
+
     # Accept the Xcode license; on first bootstrap Xcode.app only exists after
     # mas installs it. DEVELOPER_DIR is explicit because a fresh machine's
     # xcode-select still points at the CommandLineTools, where bare
