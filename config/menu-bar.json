@@ -74,6 +74,7 @@
       "NSStatusItem Preferred Position calendar-events": 310.0,
       "NSStatusItem Preferred Position raycastIcon": 6067.0,
       "NSStatusItem VisibleCC Item-1": false,
+      "NSStatusItem VisibleCC calendar-events": false,
       "NSStatusItem VisibleCC raycastIcon": false
     },
     "dev.kdrag0n.MacVirt": {
@@ -104,7 +105,7 @@
     "com.obsproject.obs-studio": true,
     "com.openai.codex": false,
     "com.openai.sky.CUAService": true,
-    "com.raycast.macos": true,
+    "com.raycast.macos": false,
     "com.todoist.mac.Todoist": true,
     "com.whattheport.app": true,
     "dev.kdrag0n.MacVirt": true,

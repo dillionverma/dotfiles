@@ -97,7 +97,10 @@
   homebrew = {
     enable = true;
     # Include pinned taps and third-party taps needed by declared casks.
-    taps = builtins.attrNames config.nix-homebrew.taps ++ [ "aboudjem/tap" ];
+    taps = builtins.attrNames config.nix-homebrew.taps ++ [
+      "aboudjem/tap"
+      "appandflow/tap"
+    ];
 
     onActivation = {
       autoUpdate = false;
@@ -157,12 +160,15 @@
       "obs"
       "obsidian"
       "orbstack"
+      "protonvpn"
       "raycast"
       "rectangle"
       "rustdesk"
       "slack"
       "aboudjem/tap/sleepless"
       "spotify"
+      "stats"
+      "appandflow/tap/stim"
       "thunderbird"
       "transmission"
       "vibe-island"
