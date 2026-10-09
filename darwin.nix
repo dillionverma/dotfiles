@@ -100,6 +100,7 @@
     taps = builtins.attrNames config.nix-homebrew.taps ++ [
       "aboudjem/tap"
       "appandflow/tap"
+      "jithin-sabu/tap"
     ];
 
     onActivation = {
@@ -161,6 +162,7 @@
       "obsidian"
       "orbstack"
       "protonvpn"
+      "jithin-sabu/tap/purge"
       "raycast"
       "rectangle"
       "rustdesk"
