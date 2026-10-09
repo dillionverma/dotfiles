@@ -15,6 +15,13 @@ let
 
   # Shared Vesper colours; see theme.nix.
   theme = import ./theme.nix;
+
+  # npm-only CLIs with no nixpkgs package. Installed into PNPM_HOME on switch
+  # when missing; `just pnpm-upgrade` moves them to latest. Each entry's bin
+  # must share the package name — that is how activation detects it.
+  pnpmGlobals = [
+    "agent-device"
+  ];
 in
 {
   home.username = me.username;
@@ -80,6 +87,8 @@ in
   # of packages listed above) or the nix version gets shadowed. Homebrew is
   # last on purpose; never eval `brew shellenv` — it prepends.
   home.sessionPath = [
+    # pnpm 11 links global bins into $PNPM_HOME/bin
+    "${config.home.homeDirectory}/Library/pnpm/bin"
     "${config.home.homeDirectory}/Library/pnpm"
     "${config.home.homeDirectory}/.cargo/bin"
     "${config.home.homeDirectory}/.local/bin"
@@ -87,6 +96,18 @@ in
     "/opt/homebrew/bin"
     "/opt/homebrew/sbin"
   ];
+
+  # Network failures warn instead of failing the switch.
+  home.activation.pnpmGlobals = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    export PNPM_HOME="${config.home.sessionVariables.PNPM_HOME}"
+    export PATH="$PNPM_HOME/bin:${pkgs.nodejs_24}/bin:$PATH"
+    for pkg in ${builtins.concatStringsSep " " pnpmGlobals}; do
+      if [ ! -x "$PNPM_HOME/bin/$pkg" ]; then
+        run ${pkgs.pnpm}/bin/pnpm add -g "$pkg@latest" \
+          || echo "warning: pnpm add -g $pkg failed; rerun switch when online" >&2
+      fi
+    done
+  '';
 
   ## Zsh ---------------------------------------------------------------------
   programs.zsh = {

@@ -55,6 +55,10 @@ brew-upgrade:
     brew upgrade
     brew upgrade --cask --greedy
 
+# Move the pnpmGlobals from home.nix to their latest releases.
+pnpm-upgrade:
+    pnpm update -g --latest
+
 # List system generations (the profile lock is root-owned).
 generations:
     sudo darwin-rebuild --list-generations
