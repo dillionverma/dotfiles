@@ -327,10 +327,9 @@ in
     # No implicit defaults; the "*" block below is the whole config.
     enableDefaultConfig = false;
     # Rendered as a single `Include` line ahead of every Host block, which is
-    # what OrbStack requires. Dropping these is what broke `ssh orb` and the
-    # Conductor hosts when this module first took over ~/.ssh/config.
+    # what OrbStack requires. Dropping it is what broke `ssh orb` when this
+    # module first took over ~/.ssh/config.
     includes = [
-      "conductor_config"
       "~/.orbstack/ssh/config"
     ];
     settings."*" = {

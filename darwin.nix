@@ -145,7 +145,6 @@
       "cloudflare-warp"
       "codex"
       "codex-app"
-      "conductor"
       "cursor-cli"
       "discord"
       "ente-auth"
