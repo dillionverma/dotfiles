@@ -126,6 +126,9 @@
       # missing features. `nix flake update homebrew-core` pulls newer formulae.
       "railway"
       "pscale"
+      # iOS `pod install` for Expo/React Native. nixpkgs pins 1.16.2;
+      # Homebrew has 1.17.0, and Expo's setup docs install it from brew.
+      "cocoapods"
     ]
     ++ lib.optional (hostName == "mac-mini") "tailscale"; # system service works before login
 
