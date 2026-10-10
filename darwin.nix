@@ -223,10 +223,11 @@
       persistent-apps = [
         "/Applications/Ghostty.app"
         "/Applications/Zed.app"
+        "/Applications/Aside.app"
         "/Applications/Slack.app"
-        "/Applications/Figma.app"
+        "/Applications/Discord.app"
+        "/Applications/Paper.app"
         "/Applications/Notion.app"
-        "/Applications/Bitwarden.app"
         "/Applications/Spotify.app"
         "/System/Applications/System Settings.app"
       ];
