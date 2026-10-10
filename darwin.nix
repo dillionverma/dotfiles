@@ -165,6 +165,7 @@
       "obs"
       "obsidian"
       "orbstack"
+      "paper-design"
       "protonvpn"
       "jithin-sabu/tap/purge"
       "raycast"
