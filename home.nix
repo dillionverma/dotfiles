@@ -81,6 +81,17 @@ in
   ];
 
   home.sessionVariables.PNPM_HOME = "${config.home.homeDirectory}/Library/pnpm";
+  # Android Studio's default SDK location. The SDK is not managed by nix;
+  # Studio's SDK Manager or `sdkmanager` installs into it.
+  home.sessionVariables.ANDROID_HOME = "${config.home.homeDirectory}/Library/Android/sdk";
+
+  # JAVA_HOME for CLI Gradle builds (expo run:android, ./gradlew). React
+  # Native recommends JDK 17, which runs Gradle 7.3 onward. Studio's bundled
+  # JBR is JDK 25 and needs Gradle 9.1+, so older projects would break on it.
+  programs.java = {
+    enable = true;
+    package = pkgs.zulu17;
+  };
 
   # home-manager PREPENDS these, so they win over the nix profiles. Keep them
   # free of anything nix also provides (no `uv tool install` / `cargo install`
@@ -93,6 +104,9 @@ in
     "${config.home.homeDirectory}/.cargo/bin"
     "${config.home.homeDirectory}/.local/bin"
     "${config.home.homeDirectory}/.opencode/bin"
+    "${config.home.sessionVariables.ANDROID_HOME}/platform-tools"
+    "${config.home.sessionVariables.ANDROID_HOME}/emulator"
+    "${config.home.sessionVariables.ANDROID_HOME}/cmdline-tools/latest/bin"
     "/opt/homebrew/bin"
     "/opt/homebrew/sbin"
   ];

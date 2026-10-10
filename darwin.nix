@@ -131,6 +131,8 @@
 
     casks = [
       "1password"
+      # SDK lives in ~/Library/Android/sdk; ANDROID_HOME and the JDK are in home.nix.
+      "android-studio"
       "aside"
       "bb"
       "beeper"
