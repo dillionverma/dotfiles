@@ -237,8 +237,8 @@
     # Deliberate security tradeoff: no "downloaded from the internet" prompts.
     LaunchServices.LSQuarantine = false;
 
-    # Dock icon shows CPU usage.
-    ActivityMonitor.IconType = 5;
+    # Dock icon is the plain app icon, not a live usage graph.
+    ActivityMonitor.IconType = 0;
 
     # No first-class nix-darwin options for these; written verbatim.
     CustomUserPreferences = {
