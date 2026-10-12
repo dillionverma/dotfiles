@@ -21,6 +21,7 @@ let
   # must share the package name — that is how activation detects it.
   pnpmGlobals = [
     "agent-device"
+    "stim"
   ];
 in
 {
@@ -47,7 +48,10 @@ in
     yt-dlp
 
     # dev toolchain
+    actionlint
     bitwarden-cli
+    # Android C++ builds in React Native reuse compiled objects across worktrees.
+    ccache
     cloudflared
     devenv
     infisical
@@ -80,6 +84,9 @@ in
     (pkgs.writeShellScriptBin "repo-clone" (builtins.readFile ./scripts/repo-clone))
   ];
 
+  # CocoaPods refuses to run without a UTF-8 locale, and agent shells start
+  # with none.
+  home.sessionVariables.LANG = "en_US.UTF-8";
   home.sessionVariables.PNPM_HOME = "${config.home.homeDirectory}/Library/pnpm";
   # Android Studio's default SDK location. The SDK is not managed by nix;
   # Studio's SDK Manager or `sdkmanager` installs into it.
