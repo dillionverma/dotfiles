@@ -23,6 +23,12 @@ let
     "agent-device"
     "stim"
   ];
+
+  # Runs the repo checkout's script so edits apply without a rebuild.
+  agentsMcpSync = pkgs.writeShellScriptBin "agents-mcp-sync" ''
+    exec ${pkgs.python3.withPackages (ps: [ ps.tomlkit ])}/bin/python3 \
+      ${dotfilesDir}/config/agents/mcp/sync.py "$@"
+  '';
 in
 {
   home.username = me.username;
@@ -33,6 +39,8 @@ in
   # Tools with a programs.* module below (git, gh, vim, tmux, bat, fzf,
   # zoxide, direnv, oh-my-posh) are installed by their module instead.
   home.packages = with pkgs; [
+    agentsMcpSync
+
     # shell & file tools
     dust
     eza
@@ -424,6 +432,8 @@ in
     config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/agents/claude";
   home.file.".agents/codex".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/agents/codex";
+  home.file.".agents/mcp".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/agents/mcp";
 
   # Codex reads ~/.agents/skills natively; Claude needs these links into it.
   home.file.".claude/CLAUDE.md".source =
@@ -444,6 +454,13 @@ in
         run ln -s "../../.agents/skills/$name" "$HOME/.claude/skills/$name"
       fi
     done
+  '';
+
+  # MCP servers can't be symlinked (each tool mixes them with auth state), so sync them.
+  home.activation.agentsMcpSync = config.lib.dag.entryAfter [ "linkGeneration" ] ''
+    export PATH="$HOME/.local/bin:/opt/homebrew/bin:$PATH"
+    run ${agentsMcpSync}/bin/agents-mcp-sync \
+      || echo "warning: agents-mcp-sync failed; rerun agents-mcp-sync" >&2
   '';
 
 }

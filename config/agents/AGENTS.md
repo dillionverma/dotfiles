@@ -50,6 +50,13 @@ keep Claude and Codex hooks in step. Never add instructions, skills or hooks
 directly under `~/.claude` or `~/.codex`. `~/.agents/` itself is versioned in
 the dotfiles repo under `config/agents/`.
 
+MCP servers are defined once in `~/.agents/mcp/servers.json`. To add, change or
+remove a server, edit that file and run `agents-mcp-sync`, which writes it into
+Claude, Codex, Cursor and OpenCode (`drs` also runs it). Never use
+`claude mcp add`, `codex mcp add` or edit a tool's MCP config directly; the next
+sync overwrites it. Each tool keeps its own sign-in, so a new server may need a
+login in each tool.
+
 # Git worktrees
 
 Never create worktrees as siblings of a repo (for example `../<repo>-<topic>`).
@@ -78,10 +85,9 @@ conventions throughout.
 - **Personal:** `personal` at `https://mcp.dillion.io/mcp`. Personal Google,
   GitHub, Notion, Todoist, and **Dillions Personal** Cloudflare;
   `vermadillion@gmail.com` / `hello@dillion.io`.
-- **Work:** the Product Studio portal (`productstudio-mcp` in Claude Code,
-  `product-studio` in Codex) at `https://mcp.product.studio/mcp`. Product
-  Studio/Halo accounts and resources; `dillion@product.studio`. Use the `portal`
-  skill.
+- **Work:** `product-studio`, the Product Studio portal at
+  `https://mcp.product.studio/mcp`. Product Studio/Halo accounts and resources;
+  `dillion@product.studio`. Use the `portal` skill.
 
 Route by resource ownership, not login or checkout. For a work resource, prefer
 the portal over any other MCP server or plugin bridge for the same service, and

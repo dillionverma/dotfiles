@@ -1,0 +1,174 @@
+{
+  "servers": {
+    "beeper": {
+      "url": "http://127.0.0.1:23373/v0/mcp"
+    },
+    "codegraph": {
+      "command": "codegraph",
+      "args": [
+        "serve",
+        "--mcp"
+      ]
+    },
+    "expo": {
+      "command": "/Users/dillion/.codex/bin/expo-robot-mcp.mjs",
+      "env": {
+        "EXPO_ROBOT_TOKEN_KEYCHAIN_ACCOUNT": "portal",
+        "EXPO_ROBOT_TOKEN_KEYCHAIN_SERVICE": "expo-portal-mcp-token"
+      }
+    },
+    "google-calendar": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@cocal/google-calendar-mcp"
+      ],
+      "env": {
+        "GOOGLE_CALENDAR_MCP_TOKEN_PATH": "/Users/dillion/.config/google-mcp/dillion-portal/tokens/google-calendar-token.json",
+        "GOOGLE_OAUTH_CREDENTIALS": "/Users/dillion/.config/google-mcp/dillion-portal/oauth-client.json"
+      }
+    },
+    "icon-composer": {
+      "command": "/etc/profiles/per-user/dillion/bin/node",
+      "args": [
+        "/Users/dillion/.local/share/icon-composer-mcp/node_modules/icon-composer-mcp/dist/server.js"
+      ]
+    },
+    "instant-domain-search": {
+      "url": "https://api.instantdomainsearch.com/mcp/streamable-http"
+    },
+    "msgvault": {
+      "command": "/Users/dillion/.local/bin/msgvault",
+      "args": [
+        "mcp"
+      ],
+      "disabledTools": [
+        "stage_deletion"
+      ],
+      "codex": {
+        "tools": {
+          "export_attachment": {
+            "approval_mode": "prompt"
+          },
+          "aggregate": {
+            "approval_mode": "approve"
+          },
+          "get_attachment": {
+            "approval_mode": "approve"
+          },
+          "get_message": {
+            "approval_mode": "approve"
+          },
+          "get_stats": {
+            "approval_mode": "approve"
+          },
+          "list_messages": {
+            "approval_mode": "approve"
+          },
+          "search_by_domains": {
+            "approval_mode": "approve"
+          },
+          "search_in_message": {
+            "approval_mode": "approve"
+          },
+          "search_message_bodies": {
+            "approval_mode": "approve"
+          },
+          "search_messages": {
+            "approval_mode": "approve"
+          },
+          "search_metadata": {
+            "approval_mode": "approve"
+          },
+          "semantic_search_messages": {
+            "approval_mode": "approve"
+          }
+        }
+      }
+    },
+    "next-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "next-devtools-mcp@latest"
+      ],
+      "codex": {
+        "tools": {
+          "browser_eval": {
+            "approval_mode": "approve"
+          },
+          "init": {
+            "approval_mode": "approve"
+          },
+          "nextjs_call": {
+            "approval_mode": "approve"
+          },
+          "nextjs_index": {
+            "approval_mode": "approve"
+          }
+        }
+      }
+    },
+    "notion": {
+      "command": "/etc/profiles/per-user/dillion/bin/node",
+      "args": [
+        "/Users/dillion/.bb/thread-storage/notion-api/launch.mjs"
+      ]
+    },
+    "openseo": {
+      "url": "https://app.openseo.so/mcp"
+    },
+    "paper": {
+      "command": "/Users/dillion/.paper/bin/paper",
+      "args": [
+        "mcp"
+      ]
+    },
+    "personal": {
+      "url": "https://mcp.dillion.io/mcp"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@0.0.83",
+        "--config",
+        "/Users/dillion/.playwright-mcp/config.json",
+        "--user-data-dir",
+        "/Users/dillion/.playwright-mcp/profiles/{harness}",
+        "--output-dir",
+        "/Users/dillion/Downloads/playwright-mcp"
+      ]
+    },
+    "principia_phone": {
+      "url": "https://principia-phone-agent.dillion.workers.dev/mcp",
+      "headersHelper": "/usr/bin/security find-generic-password -a codex -s principia.calls.mcp -w",
+      "codex": {
+        "tool_timeout_sec": 30.0
+      }
+    },
+    "product-studio": {
+      "url": "https://mcp.product.studio/mcp?codemode=search_and_execute"
+    },
+    "shadcn": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "shadcn@latest",
+        "mcp"
+      ]
+    },
+    "todoist": {
+      "url": "https://ai.todoist.net/mcp"
+    },
+    "zinc": {
+      "url": "https://mcp.zinc.com/mcp"
+    }
+  },
+  "unmanaged": {
+    "codex": [
+      "computer-use",
+      "node_repl"
+    ]
+  }
+}
