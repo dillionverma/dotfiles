@@ -1,0 +1,4 @@
+interface:
+  display_name: "DigUp NAS search"
+  short_description: "Search and read Dillion’s NAS archive through the Mac mini"
+  default_prompt: "Search Dillion’s NAS archive with DigUp and cite the source documents."

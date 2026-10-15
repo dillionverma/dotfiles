@@ -409,4 +409,31 @@ in
   xdg.configFile."zed/settings.json".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/zed/settings.json";
 
+  ## Coding agents -------------------------------------------------------------
+  # ~/.agents is the one source every agent reads; writable so agents and skill
+  # installers can update it in the repo.
+  home.file.".agents/AGENTS.md".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/agents/AGENTS.md";
+  home.file.".agents/new-project.md".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/agents/new-project.md";
+  home.file.".agents/skills".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/agents/skills";
+
+  # Codex reads ~/.agents/skills natively; Claude needs these links into it.
+  home.file.".claude/CLAUDE.md".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.agents/AGENTS.md";
+  home.file.".codex/AGENTS.md".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.agents/AGENTS.md";
+
+  # Claude keeps its own synced/ dir in ~/.claude/skills, so link per skill.
+  home.activation.claudeSkills = config.lib.dag.entryAfter [ "linkGeneration" ] ''
+    run mkdir -p "$HOME/.claude/skills"
+    for skill in "${dotfilesDir}"/config/agents/skills/*/; do
+      name=$(basename "$skill")
+      if [ ! -e "$HOME/.claude/skills/$name" ]; then
+        run ln -s "../../.agents/skills/$name" "$HOME/.claude/skills/$name"
+      fi
+    done
+  '';
+
 }
