@@ -1,0 +1,24 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk hook codex"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__.*linear.*(issue_create|issue_update|save_issue)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.agents/hooks/linear-method.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

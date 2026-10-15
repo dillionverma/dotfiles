@@ -1,10 +1,9 @@
 # Command output
 
 Command output here is condensed by RTK to save tokens, keeping every signal
-and dropping costly noise. Treat it as the complete result. Claude Code's RTK
-hook rewrites commands automatically; in other tools, prefix each shell command
-with `rtk`, including inside chains (`rtk git add . && rtk git commit`). Batch
-related commands into one call to avoid extra turns. Truncated results state
+and dropping costly noise. A hook rewrites shell commands automatically, so run
+them normally. Treat the output as the complete result. Batch related commands
+into one call to avoid extra turns. Truncated results state
 their recovery path in their own output. Re-run a command as `rtk proxy <cmd>`
 only when its result is unusable: empty when output was clearly expected,
 contradicting its exit code, or garbled.
@@ -41,12 +40,15 @@ Keep project-local dependencies in their project manifests and lockfiles.
 
 # Agent instructions and skills
 
-`~/.agents/` is the single source for agent instructions and skills. Every
-tool's copy is a symlink to it: `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`
-link to `~/.agents/AGENTS.md`, and `~/.claude/skills/<name>` links to
-`~/.agents/skills/<name>`. Never add instructions or skills under `~/.claude`
-or `~/.codex`. `~/.agents/` itself is versioned in the dotfiles repo under
-`config/agents/`.
+`~/.agents/` is the single source for agent instructions, skills and hooks.
+Every tool's copy is a symlink to it: `~/.claude/CLAUDE.md` and
+`~/.codex/AGENTS.md` link to `~/.agents/AGENTS.md`, `~/.claude/skills/<name>`
+links to `~/.agents/skills/<name>`, `~/.claude/settings.json` links to
+`~/.agents/claude/settings.json`, and `~/.codex/hooks.json` links to
+`~/.agents/codex/hooks.json`. Shared hook scripts live in `~/.agents/hooks/`;
+keep Claude and Codex hooks in step. Never add instructions, skills or hooks
+directly under `~/.claude` or `~/.codex`. `~/.agents/` itself is versioned in
+the dotfiles repo under `config/agents/`.
 
 # Git worktrees
 

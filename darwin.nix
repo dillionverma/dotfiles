@@ -178,7 +178,6 @@
       "appandflow/tap/stim"
       "thunderbird"
       "transmission"
-      "vibe-island"
       "zed"
     ]
     ++ lib.optional (hostName != "mac-mini") "tailscale-app";

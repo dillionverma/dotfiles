@@ -418,12 +418,22 @@ in
     config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/agents/new-project.md";
   home.file.".agents/skills".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/agents/skills";
+  home.file.".agents/hooks".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/agents/hooks";
+  home.file.".agents/claude".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/agents/claude";
+  home.file.".agents/codex".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/agents/codex";
 
   # Codex reads ~/.agents/skills natively; Claude needs these links into it.
   home.file.".claude/CLAUDE.md".source =
     config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.agents/AGENTS.md";
+  home.file.".claude/settings.json".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.agents/claude/settings.json";
   home.file.".codex/AGENTS.md".source =
     config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.agents/AGENTS.md";
+  home.file.".codex/hooks.json".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.agents/codex/hooks.json";
 
   # Claude keeps its own synced/ dir in ~/.claude/skills, so link per skill.
   home.activation.claudeSkills = config.lib.dag.entryAfter [ "linkGeneration" ] ''
