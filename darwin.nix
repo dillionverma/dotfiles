@@ -129,8 +129,13 @@
       # iOS `pod install` for Expo/React Native. nixpkgs pins 1.16.2;
       # Homebrew has 1.17.0, and Expo's setup docs install it from brew.
       "cocoapods"
+      # A tunnel connector warns once it falls behind; nixpkgs lags a release.
+      "cloudflared"
     ]
-    ++ lib.optional (hostName == "mac-mini") "tailscale"; # system service works before login
+    ++ lib.optionals (hostName == "mac-mini") [
+      "tailscale" # system service works before login
+      "cliproxyapi" # ai.dillion.io below; nixpkgs pins 8.0.8, Homebrew has 8.0.25
+    ];
 
     casks = [
       "1password"
@@ -188,6 +193,69 @@
       Timery = 1425368544;
       Xcode = 497799835;
     };
+  };
+
+  ## AI gateway (mac-mini) ----------------------------------------------------
+  # One OpenAI-compatible endpoint, https://ai.dillion.io/v1, over the AI
+  # subscriptions signed in to CLIProxyAPI (the engine inside VibeProxy, run
+  # headless). Both run as daemons so they start at boot without a login.
+  # Secrets stay on the machine:
+  #   ~/.config/cliproxyapi/secrets.env  CLIPROXY_API_KEY, CLIPROXY_MANAGEMENT_KEY
+  #   ~/.cli-proxy-api/                  provider OAuth tokens
+  #   ~/.cloudflared/<tunnel-id>.json    tunnel credentials
+  # Add a provider: cliproxyapi -config ~/.config/cliproxyapi/config.yaml -<provider>-login -no-browser,
+  # with the printed callback port forwarded over ssh -L, since the OAuth
+  # redirect lands on the mini's localhost. After `brew upgrade cliproxyapi`:
+  #   sudo launchctl kickstart -k system/org.nixos.cliproxyapi
+
+  launchd.daemons = lib.mkIf (hostName == "mac-mini") {
+    cliproxyapi.serviceConfig = {
+      UserName = me.username;
+      EnvironmentVariables.HOME = "/Users/${me.username}";
+      ProgramArguments = [
+        "${pkgs.writeShellScript "cliproxyapi-run" ''
+          set -eu
+          umask 077
+          dir="$HOME/.config/cliproxyapi"
+          set -a
+          . "$dir/secrets.env"
+          set +a
+          : "''${CLIPROXY_API_KEY:?}" "''${CLIPROXY_MANAGEMENT_KEY:?}"
+          chmod -R go-rwx "$HOME/.cli-proxy-api"
+          ${pkgs.gettext}/bin/envsubst '$CLIPROXY_API_KEY $CLIPROXY_MANAGEMENT_KEY' \
+            <${./config/cliproxyapi/config.yaml} >"$dir/config.yaml"
+          unset CLIPROXY_API_KEY CLIPROXY_MANAGEMENT_KEY
+          exec /opt/homebrew/opt/cliproxyapi/bin/cliproxyapi -config "$dir/config.yaml"
+        ''}"
+      ];
+      RunAtLoad = true;
+      KeepAlive = true;
+      StandardOutPath = "/Users/${me.username}/Library/Logs/cliproxyapi.log";
+      StandardErrorPath = "/Users/${me.username}/Library/Logs/cliproxyapi.log";
+    };
+
+    cloudflared-ai.serviceConfig = {
+      UserName = me.username;
+      EnvironmentVariables.HOME = "/Users/${me.username}";
+      ProgramArguments = [
+        "/opt/homebrew/bin/cloudflared"
+        "tunnel"
+        "--config"
+        "${./config/cloudflared/ai.yml}"
+        "run"
+      ];
+      RunAtLoad = true;
+      KeepAlive = true;
+      StandardOutPath = "/Users/${me.username}/Library/Logs/cloudflared-ai.log";
+      StandardErrorPath = "/Users/${me.username}/Library/Logs/cloudflared-ai.log";
+    };
+  };
+
+  # Always on: no sleep, and power back on after an outage or a freeze.
+  power = lib.mkIf (hostName == "mac-mini") {
+    sleep.computer = "never";
+    restartAfterPowerFailure = true;
+    restartAfterFreeze = true;
   };
 
   ## Fonts -------------------------------------------------------------------

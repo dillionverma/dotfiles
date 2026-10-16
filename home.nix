@@ -60,7 +60,6 @@ in
     bitwarden-cli
     # Android C++ builds in React Native reuse compiled objects across worktrees.
     ccache
-    cloudflared
     devenv
     infisical
     just

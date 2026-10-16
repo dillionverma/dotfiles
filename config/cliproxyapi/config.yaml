@@ -1,0 +1,39 @@
+# CLIProxyAPI on the Mac mini, published as https://ai.dillion.io/v1.
+# Keys CLIProxyAPI defaults are left out. The launchd daemon in darwin.nix
+# renders this into ~/.config/cliproxyapi/config.yaml, filling the ${...}
+# placeholders from ~/.config/cliproxyapi/secrets.env (mode 600, not in git).
+config-version: 8
+
+server:
+  host: "127.0.0.1"
+  port: 8317
+  # cloudflared connects from localhost. Trusting it makes CLIProxyAPI take
+  # the client IP from X-Forwarded-For, so tunnel traffic counts as remote
+  # and allow-remote: false keeps management off the public endpoint.
+  trusted-proxies: ["127.0.0.1", "::1"]
+
+management:
+  # Reach the panel over SSH: ssh -L 8317:127.0.0.1:8317 mac-mini
+  allow-remote: false
+  secret-key: "${CLIPROXY_MANAGEMENT_KEY}"
+
+access:
+  api-keys:
+    - "${CLIPROXY_API_KEY}"
+
+routing:
+  strategy: "round-robin"
+  session-affinity: true
+  session-affinity-ttl: "1h"
+  session-affinity-subagents: true
+  session-affinity-rebind-on: "quota"
+  retry:
+    request-retry: 3
+    max-retry-interval: 30
+
+requests:
+  # Cloudflare drops a request with no response bytes after 100 seconds.
+  nonstream-keepalive-interval: 15
+
+oauth:
+  auth-dir: "~/.cli-proxy-api"

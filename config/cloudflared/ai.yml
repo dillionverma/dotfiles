@@ -1,0 +1,14 @@
+# Named tunnel "vibeproxy". Its credentials file stays on the Mac mini only.
+tunnel: e8562a9e-0c80-4e53-8666-3d01ad9306ea
+credentials-file: /Users/dillion/.cloudflared/e8562a9e-0c80-4e53-8666-3d01ad9306ea.json
+no-autoupdate: true
+ingress:
+  # Only the API is public. Management and the control panel get a 404 here.
+  - hostname: ai.dillion.io
+    path: ^/v1/
+    service: http://127.0.0.1:8317
+  # Earlier name, kept so existing clients keep working.
+  - hostname: vibeproxy.dillion.io
+    path: ^/v1/
+    service: http://127.0.0.1:8317
+  - service: http_status:404
