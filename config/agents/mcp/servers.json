@@ -3,39 +3,11 @@
     "beeper": {
       "url": "http://127.0.0.1:23373/v0/mcp"
     },
-    "codegraph": {
-      "command": "codegraph",
-      "args": [
-        "serve",
-        "--mcp"
-      ]
-    },
-    "expo": {
-      "command": "/Users/dillion/.codex/bin/expo-robot-mcp.mjs",
-      "env": {
-        "EXPO_ROBOT_TOKEN_KEYCHAIN_ACCOUNT": "portal",
-        "EXPO_ROBOT_TOKEN_KEYCHAIN_SERVICE": "expo-portal-mcp-token"
-      }
-    },
-    "google-calendar": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@cocal/google-calendar-mcp"
-      ],
-      "env": {
-        "GOOGLE_CALENDAR_MCP_TOKEN_PATH": "/Users/dillion/.config/google-mcp/dillion-portal/tokens/google-calendar-token.json",
-        "GOOGLE_OAUTH_CREDENTIALS": "/Users/dillion/.config/google-mcp/dillion-portal/oauth-client.json"
-      }
-    },
     "icon-composer": {
       "command": "/etc/profiles/per-user/dillion/bin/node",
       "args": [
         "/Users/dillion/.local/share/icon-composer-mcp/node_modules/icon-composer-mcp/dist/server.js"
       ]
-    },
-    "instant-domain-search": {
-      "url": "https://api.instantdomainsearch.com/mcp/streamable-http"
     },
     "msgvault": {
       "command": "/Users/dillion/.local/bin/msgvault",
@@ -116,7 +88,15 @@
       ]
     },
     "openseo": {
-      "url": "https://app.openseo.so/mcp"
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@0.15.2",
+        "https://app.openseo.so/mcp",
+        "33412",
+        "--auth-timeout",
+        "120"
+      ]
     },
     "paper": {
       "command": "/Users/dillion/.paper/bin/paper",
@@ -125,7 +105,15 @@
       ]
     },
     "personal": {
-      "url": "https://mcp.dillion.io/mcp"
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@0.15.2",
+        "https://mcp.dillion.io/mcp",
+        "33410",
+        "--auth-timeout",
+        "120"
+      ]
     },
     "playwright": {
       "command": "npx",
@@ -140,15 +128,16 @@
         "/Users/dillion/Downloads/playwright-mcp"
       ]
     },
-    "principia_phone": {
-      "url": "https://principia-phone-agent.dillion.workers.dev/mcp",
-      "headersHelper": "/usr/bin/security find-generic-password -a codex -s principia.calls.mcp -w",
-      "codex": {
-        "tool_timeout_sec": 30.0
-      }
-    },
     "product-studio": {
-      "url": "https://mcp.product.studio/mcp?codemode=search_and_execute"
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@0.15.2",
+        "https://mcp.product.studio/mcp?codemode=search_and_execute",
+        "33411",
+        "--auth-timeout",
+        "120"
+      ]
     },
     "shadcn": {
       "command": "npx",
@@ -157,9 +146,6 @@
         "shadcn@latest",
         "mcp"
       ]
-    },
-    "zinc": {
-      "url": "https://mcp.zinc.com/mcp"
     }
   },
   "unmanaged": {
