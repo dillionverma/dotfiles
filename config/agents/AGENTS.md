@@ -19,6 +19,15 @@ conventions unless a change is requested or justified.
 Keep summaries and explanations in chat. Create documentation only when asked;
 update existing docs when needed.
 
+# Writing style
+
+Write replies and docs in 80% ASD-STE100: Simplified Technical English with
+normal technical vocabulary. One idea per sentence, 20 words at most. Use active
+voice, simple tenses, and common words with one meaning each. Put a condition
+before its instruction: "If the build fails, read the log." Define an
+unfamiliar term in a few words at first use. Keep code, commands, identifiers,
+quoted errors and numbers exact. Keep every fact, caveat and uncertainty.
+
 # Personal archive
 
 For questions about Dillion's archived records or media, or finding NAS files,
