@@ -426,6 +426,7 @@ package-local implementations behind these commands; omit irrelevant commands.
 | Calendar and activity heatmaps | Prefer [beUI Heat Calendar](https://beui.dev/charts/heat-calendar) for activity intensity over calendar dates | `bunx --bun shadcn@latest add @beui/heat-calendar` |
 | File uploads | Use [Dice UI File Upload](https://diceui.com/docs/components/base/file-upload) | `bunx --bun shadcn@latest add @diceui/file-upload` |
 | Image cropping | Use [Dice UI Cropper](https://diceui.com/docs/components/base/cropper) | `bunx --bun shadcn@latest add @diceui/cropper` |
+| Emoji pickers and reactions | Use [Frimousse](https://frimousse.liveblocks.io/) | `bunx --bun shadcn@latest add https://frimousse.liveblocks.io/r/emoji-picker` |
 
 ### Expressive visual treatments
 
